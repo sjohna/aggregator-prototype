@@ -18,7 +18,7 @@ namespace aggregator_server
 {
     public class Program
     {
-        private static readonly ILog startupLog = LogManager.GetLogger($"Startup.{typeof(Program)}");
+        private static readonly ILog configLog = LogManager.GetLogger($"Config.{typeof(Program)}");
 
         private static readonly string LogDirectory = "Logs";
 
@@ -47,7 +47,7 @@ namespace aggregator_server
 
             RollingFileAppender startupAppender = CreateRollingFileAppender(Path.Combine(LogDirectory, "StartupAndConfigure.log"), patternLayout);
 
-            var startupLogger = LogManager.GetLogger("Startup").Logger as Logger;
+            var startupLogger = LogManager.GetLogger("Config").Logger as Logger;
             startupLogger.AddAppender(startupAppender);
 
             RollingFileAppender allLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "All.log"), patternLayout);
@@ -70,8 +70,15 @@ namespace aggregator_server
         {
             ConfigureLogging();
 
-            startupLog.Info("***** Application Started *****");
-            CreateHostBuilder(args).Build().Run();
+            configLog.Info("***** Application Started *****");
+
+            var poller = new Poller(5000);
+            var pollerTask = poller.DoPollingLoop();
+
+            var host = CreateHostBuilder(args).Build();
+            host.Run();
+
+            configLog.Info("Application exiting.");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
