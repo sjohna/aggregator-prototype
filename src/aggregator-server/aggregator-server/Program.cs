@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using log4net;
@@ -18,6 +19,8 @@ namespace aggregator_server
     public class Program
     {
         private static readonly ILog startupLog = LogManager.GetLogger($"Startup.{typeof(Program)}");
+
+        private static readonly string LogDirectory = "Logs";
 
         private static RollingFileAppender CreateRollingFileAppender(string logFilePath, ILayout layout)
         {
@@ -42,15 +45,15 @@ namespace aggregator_server
             patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
             patternLayout.ActivateOptions();
 
-            RollingFileAppender startupAppender = CreateRollingFileAppender(@"Logs\Startup.log", patternLayout);
+            RollingFileAppender startupAppender = CreateRollingFileAppender(Path.Combine(LogDirectory, "StartupAndConfigure.log"), patternLayout);
 
             var startupLogger = LogManager.GetLogger("Startup").Logger as Logger;
             startupLogger.AddAppender(startupAppender);
 
-            RollingFileAppender allLog = CreateRollingFileAppender(@"Logs\All.log", patternLayout);
+            RollingFileAppender allLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "All.log"), patternLayout);
             hierarchy.Root.AddAppender(allLog);
 
-            RollingFileAppender anomalousLog = CreateRollingFileAppender(@"Logs\Anomalous.log", patternLayout);
+            RollingFileAppender anomalousLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "Anomalous.log"), patternLayout);
 
             ForwardingAppender allToAnomalousforwarder = new ForwardingAppender();
             allToAnomalousforwarder.AddAppender(anomalousLog);
