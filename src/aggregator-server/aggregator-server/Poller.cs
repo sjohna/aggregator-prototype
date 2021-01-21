@@ -1,4 +1,5 @@
 ﻿using log4net;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,12 @@ namespace aggregator_server
 
         private CancellationToken CancelToken => m_cancelTokenSource.Token;
 
-        public Poller(int pollIntervalMs)
+        private PollConfigurationRepository repository;
+
+        public Poller(int pollIntervalMs, PollConfigurationRepository repository)
         {
             this.PollIntervalMS = pollIntervalMs;
+            this.repository = repository;
 
             m_cancelTokenSource = new CancellationTokenSource();
         }
@@ -39,6 +43,35 @@ namespace aggregator_server
                     intervalTask = Task.Delay(PollIntervalMS, CancelToken);
 
                     log.Info("Checking for updates.");
+
+                    Instant pollTime = NodaTime.SystemClock.Instance.GetCurrentInstant();
+
+                    foreach (var pollConfiguration in repository.Configurations)
+                    {
+                        bool doPoll = false;
+
+                        if (pollConfiguration.LastPollInformation == null)
+                        {
+                            log.Info($"Configuration check: Configuration {pollConfiguration.ID} ({pollConfiguration.URL}) has never been polled.");
+                            doPoll = true;
+                        }
+                        else
+                        {
+                            var timeSinceLastPoll = pollTime.Minus(pollConfiguration.LastPollInformation.PolledTime);
+                            if (timeSinceLastPoll >= Duration.FromMinutes(pollConfiguration.PollIntervalMinutes))
+                            {
+                                log.Info($"Configuration check: Configuration {pollConfiguration.ID} ({pollConfiguration.URL}), last polled at {pollConfiguration.LastPollInformation.PolledTime}, will be polled again.");
+                                doPoll = true;
+                            }
+                        }
+
+                        if (doPoll)
+                        {
+                            log.Info($"Polling configuration {pollConfiguration.ID} ({pollConfiguration.URL}).");
+
+                            pollConfiguration.LastPollInformation = new Models.PollingInformation() { Successful = true, PolledTime = pollTime };
+                        }
+                    }
                 }
             }
             catch (OperationCanceledException)

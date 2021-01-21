@@ -13,6 +13,8 @@ namespace aggregator_server.Models
 
         public int ID { get; set; }
 
+        public PollingInformation LastPollInformation { get; set; }
+
         public PollConfiguration() { }
 
         public PollConfiguration(int id, int pollIntervalMinutes, string url)

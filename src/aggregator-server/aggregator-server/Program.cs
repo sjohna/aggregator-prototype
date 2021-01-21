@@ -72,9 +72,6 @@ namespace aggregator_server
 
             configLog.Info("***** Application Started *****");
 
-            var poller = new Poller(5000);
-            var pollerTask = poller.DoPollingLoop();
-
             var host = CreateHostBuilder(args).Build();
             host.Run();
 

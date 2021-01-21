@@ -38,9 +38,19 @@ namespace aggregator_server
                                   });
             });
 
-            services.AddSingleton(typeof(PollConfigurationRepository), new PollConfigurationRepository());
+            var repository = new PollConfigurationRepository();
+
+            var poller = new Poller(5000, repository);
+            var pollerTask = poller.DoPollingLoop();
+
+            services.AddSingleton(typeof(PollConfigurationRepository), repository);
 
             services.AddControllers();
+            
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.MaxDepth = 64;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
