@@ -14,6 +14,7 @@ export class PollConfigurationViewerComponent implements OnInit {
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
+    this.getConfigurations();
   }
 
   getConfigurations(): void

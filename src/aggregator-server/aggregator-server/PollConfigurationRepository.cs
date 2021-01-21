@@ -9,5 +9,15 @@ namespace aggregator_server
     public class PollConfigurationRepository
     {
         public List<PollConfiguration> Configurations = new List<PollConfiguration>();
+
+        int m_nextID = 1;
+
+        public int GetNextID()
+        {
+            lock (this)
+            {
+                return m_nextID++;
+            }
+        }
     }
 }
