@@ -17,9 +17,9 @@ namespace aggregator_server.Controllers
         private static readonly ILog configLog = LogManager.GetLogger($"Config.{typeof(PollConfigurationController)}");
         private static readonly ILog log = LogManager.GetLogger(typeof(PollConfigurationController));
 
-        private PollConfigurationRepository m_repository;
+        private IPollConfigurationRepository m_repository;
 
-        public PollConfigurationController(PollConfigurationRepository repository)
+        public PollConfigurationController(IPollConfigurationRepository repository)
         {
             m_repository = repository;
         }
@@ -28,7 +28,7 @@ namespace aggregator_server.Controllers
         [HttpGet]
         public IEnumerable<PollConfiguration> Get()
         {
-            return m_repository.Configurations;
+            return m_repository.GetConfigurations();
         }
 
         // GET api/<PollConfigurationController>/5
@@ -47,9 +47,8 @@ namespace aggregator_server.Controllers
                 return BadRequest(new { ErrorMessage = "Poll configuration must specify a URL, and a poll interval greater than 0." });
             }
 
-            value.ID = m_repository.GetNextID();
-            configLog.Info($"Adding poll configuration: ID = {value.ID}, Interval = {value.PollIntervalMinutes}, URL = {value.URL}");
-            m_repository.Configurations.Add(value);
+            var newConfiguration = m_repository.AddConfiguration(value.URL, value.PollIntervalMinutes);
+            configLog.Info($"Added poll configuration: ID = {newConfiguration.ID}, Interval = {newConfiguration.PollIntervalMinutes}, URL = {newConfiguration.URL}");
 
             return Ok();
         }

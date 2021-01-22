@@ -19,9 +19,9 @@ namespace aggregator_server
 
         private CancellationToken CancelToken => m_cancelTokenSource.Token;
 
-        private PollConfigurationRepository repository;
+        private IPollConfigurationRepository repository;
 
-        public Poller(int pollIntervalMs, PollConfigurationRepository repository)
+        public Poller(int pollIntervalMs, IPollConfigurationRepository repository)
         {
             this.PollIntervalMS = pollIntervalMs;
             this.repository = repository;
@@ -46,7 +46,7 @@ namespace aggregator_server
 
                     Instant pollTime = NodaTime.SystemClock.Instance.GetCurrentInstant();
 
-                    foreach (var pollConfiguration in repository.Configurations)
+                    foreach (var pollConfiguration in repository.GetConfigurations())
                     {
                         bool doPoll = false;
 

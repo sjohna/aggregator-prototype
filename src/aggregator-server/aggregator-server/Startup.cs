@@ -38,12 +38,12 @@ namespace aggregator_server
                                   });
             });
 
-            var repository = new PollConfigurationRepository();
+            var repository = new InMemoryPollConfigurationRepository();
 
             var poller = new Poller(5000, repository);
             var pollerTask = poller.DoPollingLoop();
 
-            services.AddSingleton(typeof(PollConfigurationRepository), repository);
+            services.AddSingleton(typeof(IPollConfigurationRepository), repository);
 
             services.AddControllers();
             
