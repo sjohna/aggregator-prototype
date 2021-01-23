@@ -38,7 +38,7 @@ namespace aggregator_server_test
         }
 
         [Test]
-        public void AddSingleConfiguration()
+        public void PostSingleConfiguration()
         {
             var newConfigurationInput = new PollConfiguration()
             {
@@ -60,7 +60,7 @@ namespace aggregator_server_test
         [Test]
         public void GetAfterAddingSingleConfiguration()
         {
-            AddSingleConfiguration();
+            PostSingleConfiguration();
 
             var configurations = Controller.Get().ToList();
 
@@ -70,6 +70,48 @@ namespace aggregator_server_test
 
             Assert.AreEqual("test", configuration.URL);
             Assert.AreEqual(3, configuration.PollIntervalMinutes);
+        }
+
+        [Test]
+        public void PostInvalidConfiguration_NoUrl()
+        {
+            var newConfigurationInput = new PollConfiguration()
+            {
+                URL = null,
+                PollIntervalMinutes = 3
+            };
+
+            var result = Controller.Post(newConfigurationInput) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public void PostInvalidConfiguration_NoPollIntervalMinutes()
+        {
+            var newConfigurationInput = new PollConfiguration()
+            {
+                URL = "test",
+                PollIntervalMinutes = null
+            };
+
+            var result = Controller.Post(newConfigurationInput) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public void PostInvalidConfiguration_PollIntervalMinutesIsNegative()
+        {
+            var newConfigurationInput = new PollConfiguration()
+            {
+                URL = "test",
+                PollIntervalMinutes = -1
+            };
+
+            var result = Controller.Post(newConfigurationInput) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
         }
     }
 }

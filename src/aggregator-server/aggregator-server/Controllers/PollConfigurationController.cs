@@ -40,17 +40,17 @@ namespace aggregator_server.Controllers
 
         // POST api/<PollConfigurationController>
         [HttpPost]
-        public IActionResult Post([FromBody] PollConfiguration value)
+        public IActionResult Post([FromBody] PollConfiguration newConfiguration)
         {
-            if (value.URL == null || value.PollIntervalMinutes <= 0)
+            if (newConfiguration.URL == null || newConfiguration.PollIntervalMinutes == null || newConfiguration.PollIntervalMinutes <= 0)
             {
                 return BadRequest(new { ErrorMessage = "Poll configuration must specify a URL, and a poll interval greater than 0." });
             }
 
-            var newConfiguration = m_repository.AddConfiguration(value.URL, value.PollIntervalMinutes);
-            configLog.Info($"Added poll configuration: ID = {newConfiguration.ID}, Interval = {newConfiguration.PollIntervalMinutes}, URL = {newConfiguration.URL}");
+            var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value);
+            configLog.Info($"Added poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}");
 
-            return Ok(newConfiguration);
+            return Ok(addedConfiguration);
         }
 
         // PUT api/<PollConfigurationController>/5
