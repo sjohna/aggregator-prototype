@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace aggregator_server
 {
-    public interface IPollConfigurationRepository
+    public interface IPollConfigurationRepository : IDisposable
     {
         IEnumerable<PollConfiguration> GetConfigurations();
 

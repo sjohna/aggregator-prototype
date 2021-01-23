@@ -27,6 +27,11 @@ namespace aggregator_server
             return newConfiguration;
         }
 
+        public void Dispose()
+        {
+            // nothing to dispose
+        }
+
         public IEnumerable<PollConfiguration> GetConfigurations()
         {
             return m_configurations.ToImmutableList();

@@ -50,7 +50,7 @@ namespace aggregator_server.Controllers
             var newConfiguration = m_repository.AddConfiguration(value.URL, value.PollIntervalMinutes);
             configLog.Info($"Added poll configuration: ID = {newConfiguration.ID}, Interval = {newConfiguration.PollIntervalMinutes}, URL = {newConfiguration.URL}");
 
-            return Ok();
+            return Ok(newConfiguration);
         }
 
         // PUT api/<PollConfigurationController>/5
