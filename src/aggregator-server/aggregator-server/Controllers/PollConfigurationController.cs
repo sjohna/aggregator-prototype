@@ -40,7 +40,7 @@ namespace aggregator_server.Controllers
 
         // POST api/<PollConfigurationController>
         [HttpPost]
-        public IActionResult Post([FromBody] PollConfiguration newConfiguration)
+        public IActionResult Post([FromBody] PollConfigurationTransferObject newConfiguration)
         {
             if (newConfiguration.URL == null || newConfiguration.PollIntervalMinutes == null || newConfiguration.PollIntervalMinutes <= 0)
             {

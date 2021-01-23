@@ -40,7 +40,7 @@ namespace aggregator_server_test
         [Test]
         public void PostSingleConfiguration()
         {
-            var newConfigurationInput = new PollConfiguration()
+            var newConfigurationInput = new PollConfigurationTransferObject()
             {
                 URL = "test",
                 PollIntervalMinutes = 3
@@ -75,7 +75,7 @@ namespace aggregator_server_test
         [Test]
         public void PostInvalidConfiguration_NoUrl()
         {
-            var newConfigurationInput = new PollConfiguration()
+            var newConfigurationInput = new PollConfigurationTransferObject()
             {
                 URL = null,
                 PollIntervalMinutes = 3
@@ -89,7 +89,7 @@ namespace aggregator_server_test
         [Test]
         public void PostInvalidConfiguration_NoPollIntervalMinutes()
         {
-            var newConfigurationInput = new PollConfiguration()
+            var newConfigurationInput = new PollConfigurationTransferObject()
             {
                 URL = "test",
                 PollIntervalMinutes = null
@@ -103,7 +103,7 @@ namespace aggregator_server_test
         [Test]
         public void PostInvalidConfiguration_PollIntervalMinutesIsNegative()
         {
-            var newConfigurationInput = new PollConfiguration()
+            var newConfigurationInput = new PollConfigurationTransferObject()
             {
                 URL = "test",
                 PollIntervalMinutes = -1

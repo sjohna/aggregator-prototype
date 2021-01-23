@@ -58,7 +58,7 @@ namespace aggregator_server
                         else
                         {
                             var timeSinceLastPoll = pollTime.Minus(pollConfiguration.LastPollInformation.PolledTime);
-                            if (timeSinceLastPoll >= Duration.FromMinutes(pollConfiguration.PollIntervalMinutes.Value))
+                            if (timeSinceLastPoll >= Duration.FromMinutes(pollConfiguration.PollIntervalMinutes))
                             {
                                 log.Info($"Configuration check: Configuration {pollConfiguration.ID} ({pollConfiguration.URL}), last polled at {pollConfiguration.LastPollInformation.PolledTime}, will be polled again.");
                                 doPoll = true;
