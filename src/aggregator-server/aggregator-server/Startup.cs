@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -38,7 +39,11 @@ namespace aggregator_server
                                   });
             });
 
-            var repository = new InMemoryPollConfigurationRepository();
+            LiteDBFunctions.DoLiteDBGlobalSetUp();
+
+            var databaseStream = new MemoryStream();
+            var database = new LiteDB.LiteDatabase(databaseStream);
+            var repository = new LiteDBPollConfigurationRepository(database);
 
             var poller = new Poller(5000, repository);
             var pollerTask = poller.DoPollingLoop();

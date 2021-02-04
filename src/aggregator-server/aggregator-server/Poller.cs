@@ -69,7 +69,9 @@ namespace aggregator_server
                         {
                             log.Info($"Polling configuration {pollConfiguration.ID} ({pollConfiguration.URL}).");
 
-                            pollConfiguration.LastPollInformation = new Models.PollingInformation() { Successful = true, PolledTime = pollTime };
+                            var LastPollInformation = new Models.PollingInformation() { Successful = true, PolledTime = pollTime };
+
+                            repository.SetConfigurationLastPollInformation(pollConfiguration.ID, LastPollInformation);
                         }
                     }
                 }

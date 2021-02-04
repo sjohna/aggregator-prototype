@@ -8,6 +8,8 @@ using aggregator_server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Net;
+using System.IO;
+using LiteDB;
 
 namespace aggregator_server_test
 {
@@ -15,19 +17,24 @@ namespace aggregator_server_test
     public class TestPollConfigurationController
     {
         private IPollConfigurationRepository repository;
+        private MemoryStream databaseStream;
+        private LiteDatabase database;
 
         [SetUp]
         public void SetUp()
         {
-            repository = new InMemoryPollConfigurationRepository();
+            databaseStream = new MemoryStream();
+            database = new LiteDatabase(databaseStream);
+            repository = new LiteDBPollConfigurationRepository(database);
         }
 
         [TearDown]
         public void TearDown()
         {
-            repository.Dispose();
+            if (repository != null) repository.Dispose();
+            if (database != null) database.Dispose();
+            if (databaseStream != null) databaseStream.Dispose();
         }
-
         // use this property each time a controller method is called to simulate how the framework actually uses it: a new instance is created for each request
         private PollConfigurationController Controller => new PollConfigurationController(repository);
 
