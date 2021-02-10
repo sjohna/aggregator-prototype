@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PollConfiguration } from './pollConfiguration';
+import { AddConfigurationModalComponent } from '../add-configuration-modal/add-configuration-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-poll-configuration-viewer',
@@ -11,16 +13,37 @@ export class PollConfigurationViewerComponent implements OnInit {
 
   configurations: PollConfiguration[] = [];
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.getConfigurations();
   }
 
-  getConfigurations(): void
-  {
+  getConfigurations(): void {
     this.httpClient.get<PollConfiguration[]>('https://localhost:44335/api/configuration/poll')
       .subscribe(value => this.configurations = value);
   }
 
+  showAddConfigurationDialog(): void {
+    const dialogRef = this.dialog.open(AddConfigurationModalComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.add)
+      {
+        console.log(`Adding: ${result.configurationURL}, interval ${result.pollIntervalMinutes}`);
+
+        this.httpClient.post<PollConfiguration>('https://localhost:44335/api/configuration/poll',
+          {
+            URL: result.configurationURL,
+            pollIntervalMinutes: Number(result.pollIntervalMinutes)
+          }).subscribe(value => { console.log('Add successful'); this.getConfigurations(); } );
+
+        this.getConfigurations();
+      }
+      else
+      {
+        console.log(`Add cancelled`);
+      }
+    });
+  }
 }
