@@ -1,8 +1,18 @@
-<div>
-    <label>URL: <input [(ngModel)]="configurationURL"/></label>
-</div>
-<div>
-    <label>Poll Interval: <input [(ngModel)]="pollIntervalMinutes"/></label>
-</div>
-<button (click)="closeAndAdd()">Add Configuration</button>
-<button (click)="close()">Cancel</button>
+<h2 mat-dialog-title>Add poll configuration</h2>
+
+<mat-dialog-content>
+    <mat-form-field>
+        <mat-label>URL</mat-label> 
+        <input matInput [(ngModel)]="configurationURL"/>
+    </mat-form-field>
+    <br/>
+    <mat-form-field>
+        <mat-label>Poll Interval (minutes)</mat-label>
+        <input matInput [(ngModel)]="pollIntervalMinutes"/>
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="closeAndAdd()">Add Configuration</button>
+    <button (click)="close()">Cancel</button>
+</mat-dialog-actions>
