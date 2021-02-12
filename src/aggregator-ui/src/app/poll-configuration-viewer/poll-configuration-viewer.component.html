@@ -1,11 +1,11 @@
 <p>There are {{configurations.length}} configurations</p>
 
 
-<ul>
-    <li *ngFor="let configuration of configurations">
+<mat-list>
+    <mat-list-item *ngFor="let configuration of configurations">
         ID = {{configuration.id}}, URL = {{configuration.url}}, Poll Interval = {{configuration.pollIntervalMinutes}} Minutes
-    </li>
-</ul>
+    </mat-list-item>
+</mat-list>
 
-<button (click)="getConfigurations()">Refresh</button>
-<button (click)="showAddConfigurationDialog()">Add Configuration</button>
+<button mat-raised-button (click)="getConfigurations()">Refresh</button>
+<button mat-raised-button (click)="showAddConfigurationDialog()">Add Configuration</button>
