@@ -1,0 +1,1 @@
+Encountering https://github.com/dotnet/aspnetcore/issues/17516 the first time I add a configuration from the web UI. I do not encounter this whenn adding a configuration through Insomnia.
