@@ -30,5 +30,10 @@ namespace aggregator_server.Models
         public int? PollIntervalMinutes { get; set; }
 
         public string URL { get; set; }
+
+        public override string ToString()   // TODO: use this more widely in logging
+        {
+            return $"(URL: {URL}, PollIntervalMinutes: {PollIntervalMinutes})";
+        }
     }
 }

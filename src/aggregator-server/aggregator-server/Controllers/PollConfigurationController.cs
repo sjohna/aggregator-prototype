@@ -42,15 +42,24 @@ namespace aggregator_server.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] PollConfigurationTransferObject newConfiguration)
         {
+            // TODO: all validation inside of repository?
             if (newConfiguration.URL == null || newConfiguration.PollIntervalMinutes == null || newConfiguration.PollIntervalMinutes <= 0)
             {
                 return BadRequest(new { ErrorMessage = "Poll configuration must specify a URL, and a poll interval greater than 0." });
             }
 
-            var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value);
-            configLog.Info($"Added poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}");
+            try
+            {
+                var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value);
+                configLog.Info($"Added poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}");
 
-            return Ok(addedConfiguration);
+                return Ok(addedConfiguration);
+            }
+            catch (RepositoryException re)  // TODO: better exceptions from repository, map them to HTTP status codes
+            {
+                log.Warn($"Invalid add of poll configuration {newConfiguration}, failed with message {re.Message}");
+                return Conflict(new { ErrorMessage = re.Message }); 
+            }
         }
 
         // PUT api/<PollConfigurationController>/5

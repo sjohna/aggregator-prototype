@@ -43,15 +43,25 @@ namespace aggregator_server
 
         public PollConfiguration AddConfiguration(string url, int pollIntervalMinutes)
         {
-            var newConfiguration = new PollConfiguration()
+            lock (database)
             {
-                URL = url,
-                PollIntervalMinutes = pollIntervalMinutes
-            };
+                var newConfiguration = new PollConfiguration()
+                {
+                    URL = url,
+                    PollIntervalMinutes = pollIntervalMinutes
+                };
 
-            database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Insert(newConfiguration);
+                var collection = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName);
 
-            return newConfiguration;
+                if (collection.Find(config => config.URL == url).Any())
+                {
+                    throw new RepositoryException($"Configuration already exists for URL {url}");
+                }
+
+                database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Insert(newConfiguration);
+
+                return newConfiguration;
+            }
         }
 
         public void Dispose()

@@ -90,5 +90,12 @@ namespace aggregator_server_test
             Assert.AreEqual(polledTime, updatedConfiguration.LastPollInformation.PolledTime);
             Assert.AreEqual(successful, updatedConfiguration.LastPollInformation.Successful);
         }
+
+        [Test]
+        public void AddConfigurationWithDuplicateURL()
+        {
+            repository.AddConfiguration("test", 7);
+            Assert.Throws<RepositoryException>(() => repository.AddConfiguration("test", 2));
+        }
     }
 }

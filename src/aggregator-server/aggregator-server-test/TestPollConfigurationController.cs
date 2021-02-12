@@ -120,5 +120,20 @@ namespace aggregator_server_test
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
         }
+
+        [Test]
+        public void PostConfigurationWithDuplicateURL()
+        {
+            var newConfigurationInput = new PollConfigurationTransferObject()
+            {
+                URL = "test",
+                PollIntervalMinutes = 3
+            };
+
+            Controller.Post(newConfigurationInput);
+            var result = Controller.Post(newConfigurationInput) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.Conflict, result.StatusCode);
+        }
     }
 }
