@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using aggregator_server.Exceptions;
 using aggregator_server.Models;
 using log4net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -55,10 +57,15 @@ namespace aggregator_server.Controllers
 
                 return Ok(addedConfiguration);
             }
-            catch (RepositoryException re)  // TODO: better exceptions from repository, map them to HTTP status codes
+            catch (RepositoryConflictException rce)
             {
-                log.Warn($"Invalid add of poll configuration {newConfiguration}, failed with message {re.Message}");
-                return Conflict(new { ErrorMessage = re.Message }); 
+                log.Warn($"Add of poll configuration {newConfiguration}, failed with message {rce.Message}");
+                return Conflict(new { ErrorMessage = rce.Message }); 
+            }
+            catch (RepositoryException re)
+            {
+                log.Error($"Unexpected RepositoryException adding poll configuration {newConfiguration}, message: {re.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { ErrorMessage = re.Message });
             }
         }
 

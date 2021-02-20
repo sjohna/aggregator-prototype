@@ -1,4 +1,5 @@
-﻿using aggregator_server.Models;
+﻿using aggregator_server.Exceptions;
+using aggregator_server.Models;
 using LiteDB;
 using log4net;
 using System;
@@ -55,7 +56,7 @@ namespace aggregator_server
 
                 if (collection.Find(config => config.URL == url).Any())
                 {
-                    throw new RepositoryException($"Configuration already exists for URL {url}");
+                    throw new RepositoryConflictException($"Configuration already exists for URL {url}");
                 }
 
                 database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Insert(newConfiguration);
@@ -87,7 +88,7 @@ namespace aggregator_server
                 if (!updateSuccessful)
                 {
                     log.Warn($"Attempted update of LastPollInformation for configuration ID {configuration.ID} failed!");
-                    throw new Exception($"Attempted update of LastPollInformation for configuration ID {configuration.ID} failed!");
+                    throw new RepositoryException($"Attempted update of LastPollInformation for configuration ID {configuration.ID} failed!");
                 }
 
                 log.Info($"Updated configuration ID {configuration.ID} LastPollInformation to {info}"); // TODO: ToString for PollingInformation
@@ -101,7 +102,7 @@ namespace aggregator_server
             var configuration = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Find(x => x.ID == id).FirstOrDefault();
 
             if (configuration == null)
-                throw new Exception($"PollConfiguration ID {id} not present in repository.");
+                throw new RepositoryItemNotFoundException($"PollConfiguration ID {id} not present in repository.");
 
             return configuration;
         }

@@ -6,6 +6,7 @@ using System.Text;
 using aggregator_server.Models;
 using NodaTime;
 using System;
+using aggregator_server.Exceptions;
 
 namespace aggregator_server_test
 {
@@ -58,7 +59,7 @@ namespace aggregator_server_test
         [Test]
         public void GetConfigurationByIDInEmptyRepository()
         {
-            Assert.Throws<Exception>(() => repository.GetConfigurationByID(1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfigurationByID(1));
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace aggregator_server_test
         {
             var addedConfiguration = repository.AddConfiguration("test1", 7);
 
-            Assert.Throws<Exception>(() => repository.GetConfigurationByID(addedConfiguration.ID + 1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfigurationByID(addedConfiguration.ID + 1));
         }
 
         [Test]
@@ -92,10 +93,27 @@ namespace aggregator_server_test
         }
 
         [Test]
+        public void SetAbsentConfigurationLastPollInformationInNonEmptyRepository()
+        {
+            var configuration = repository.AddConfiguration("test1", 7);
+
+            var polledTime = Instant.FromUnixTimeSeconds(1000000000);
+            var successful = true;
+
+            var pollInfo = new PollingInformation()
+            {
+                PolledTime = polledTime,
+                Successful = successful
+            };
+
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.SetConfigurationLastPollInformation(configuration.ID + 1, pollInfo));
+        }
+
+        [Test]
         public void AddConfigurationWithDuplicateURL()
         {
             repository.AddConfiguration("test", 7);
-            Assert.Throws<RepositoryException>(() => repository.AddConfiguration("test", 2));
+            Assert.Throws<RepositoryConflictException>(() => repository.AddConfiguration("test", 2));
         }
     }
 }
