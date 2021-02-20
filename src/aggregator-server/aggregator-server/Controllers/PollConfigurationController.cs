@@ -34,11 +34,24 @@ namespace aggregator_server.Controllers
         }
 
         // GET api/<PollConfigurationController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            try
+            {
+                return Ok(m_repository.GetConfigurationByID(id));
+            }
+            catch (RepositoryItemNotFoundException rinfe)
+            {
+                log.Warn($"Get request for invalid PollConfiguration ID {id}");
+                return NotFound(new { ErrorMessage = rinfe.Message });
+            }
+            catch (RepositoryException re)
+            {
+                log.Error($"Unexpected RepositoryException getting PollConfiguration ID {id}, message: {re.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { ErrorMessage = re.Message });
+            }
+        }
 
         // POST api/<PollConfigurationController>
         [HttpPost]

@@ -180,5 +180,30 @@ namespace aggregator_server_test
 
             Assert.AreEqual((int)HttpStatusCode.Conflict, result.StatusCode);
         }
+
+        [Test]
+        public void GetPresentPollConfiguration()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var result = Controller.Get(configuration.ID) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, result.StatusCode);
+
+            var gottenConfiguration = result.Value as PollConfiguration;
+
+            Assert.AreEqual(configuration.ID, gottenConfiguration.ID);
+            Assert.AreEqual(configuration.URL, gottenConfiguration.URL);
+            Assert.AreEqual(configuration.PollIntervalMinutes, gottenConfiguration.PollIntervalMinutes);
+            Assert.AreEqual(configuration.Active, gottenConfiguration.Active);
+        }
+
+        [Test]
+        public void GetByIDWithEmptyRepository()
+        {
+            var result = Controller.Get(1) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.NotFound, result.StatusCode);
+        }
     }
 }
