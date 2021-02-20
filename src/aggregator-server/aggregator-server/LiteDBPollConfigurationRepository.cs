@@ -42,14 +42,15 @@ namespace aggregator_server
             mapper.Entity<PollConfiguration>().Id(x => x.ID);
         }
 
-        public PollConfiguration AddConfiguration(string url, int pollIntervalMinutes)
+        public PollConfiguration AddConfiguration(string url, int pollIntervalMinutes, bool active)
         {
             lock (database)
             {
                 var newConfiguration = new PollConfiguration()
                 {
                     URL = url,
-                    PollIntervalMinutes = pollIntervalMinutes
+                    PollIntervalMinutes = pollIntervalMinutes,
+                    Active = active
                 };
 
                 var collection = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName);

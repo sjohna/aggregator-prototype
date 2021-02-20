@@ -62,6 +62,51 @@ namespace aggregator_server_test
 
             Assert.AreEqual("test", retValue.URL);
             Assert.AreEqual(3, retValue.PollIntervalMinutes);
+            Assert.IsTrue(retValue.Active);
+        }
+
+        [Test]
+        public void PostSingleConfigurationExplicitlyActive()
+        {
+            var newConfigurationInput = new PollConfigurationTransferObject()
+            {
+                URL = "test",
+                PollIntervalMinutes = 3,
+                Active = true
+            };
+
+            var result = Controller.Post(newConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, result.StatusCode);
+            Assert.IsNotNull(result.Value);
+
+            var retValue = result.Value as PollConfiguration;
+
+            Assert.AreEqual("test", retValue.URL);
+            Assert.AreEqual(3, retValue.PollIntervalMinutes);
+            Assert.IsTrue(retValue.Active);
+        }
+
+        [Test]
+        public void PostSingleInactiveConfiguration()
+        {
+            var newConfigurationInput = new PollConfigurationTransferObject()
+            {
+                URL = "test",
+                PollIntervalMinutes = 3,
+                Active = false
+            };
+
+            var result = Controller.Post(newConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, result.StatusCode);
+            Assert.IsNotNull(result.Value);
+
+            var retValue = result.Value as PollConfiguration;
+
+            Assert.AreEqual("test", retValue.URL);
+            Assert.AreEqual(3, retValue.PollIntervalMinutes);
+            Assert.IsFalse(retValue.Active);
         }
 
         [Test]

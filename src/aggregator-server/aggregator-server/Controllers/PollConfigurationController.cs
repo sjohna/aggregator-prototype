@@ -52,7 +52,9 @@ namespace aggregator_server.Controllers
 
             try
             {
-                var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value);
+                bool active = newConfiguration.Active ?? true;
+
+                var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value, active);
                 configLog.Info($"Added poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}");
 
                 return Ok(addedConfiguration);

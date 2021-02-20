@@ -8,20 +8,20 @@ namespace aggregator_server.Models
     public class PollConfiguration
     {
         public string URL { get; set; }
-
         public int PollIntervalMinutes { get; set; }
-
         public int ID { get; set; }
+        public bool Active { get; set; }
 
         public PollingInformation LastPollInformation { get; set; }
 
         public PollConfiguration() { }
 
-        public PollConfiguration(int id, int pollIntervalMinutes, string url)
+        public PollConfiguration(int id, int pollIntervalMinutes, string url, bool active)
         {
             this.ID = id;
             this.PollIntervalMinutes = pollIntervalMinutes;
             this.URL = url;
+            this.Active = active;
         }
     }
 
@@ -31,9 +31,11 @@ namespace aggregator_server.Models
 
         public string URL { get; set; }
 
+        public bool? Active { get; set; }
+
         public override string ToString()   // TODO: use this more widely in logging
         {
-            return $"(URL: {URL}, PollIntervalMinutes: {PollIntervalMinutes})";
+            return $"(URL: {URL}, PollIntervalMinutes: {PollIntervalMinutes}, Active: {Active})";
         }
     }
 }

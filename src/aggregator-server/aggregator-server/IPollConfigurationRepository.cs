@@ -11,7 +11,7 @@ namespace aggregator_server
         IEnumerable<PollConfiguration> GetConfigurations();
 
         // returns the added configuration object
-        PollConfiguration AddConfiguration(string URL, int pollIntervalMinutes);
+        PollConfiguration AddConfiguration(string URL, int pollIntervalMinutes, bool active);
 
         PollConfiguration SetConfigurationLastPollInformation(int configurationID, PollingInformation info);
 
