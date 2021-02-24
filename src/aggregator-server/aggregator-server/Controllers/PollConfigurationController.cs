@@ -90,11 +90,26 @@ namespace aggregator_server.Controllers
         //{
         //}
 
-        // DELETE api/<PollConfigurationController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-            
-        //}
+        //DELETE api/<PollConfigurationController>/5
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                m_repository.DeleteConfiguration(id);
+
+                return Ok();
+            }
+            catch (RepositoryItemNotFoundException rinfe)
+            {
+                log.Warn($"Delete request for invalid PollConfiguration ID {id}");
+                return NotFound(new { ErrorMessage = rinfe.Message });
+            }
+            catch (RepositoryException re)
+            {
+                log.Error($"Unexpected RepositoryException deleting PollConfiguration ID {id}, message: {re.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { ErrorMessage = re.Message });
+            }
+        }
     }
 }

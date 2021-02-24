@@ -205,5 +205,60 @@ namespace aggregator_server_test
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, result.StatusCode);
         }
+
+        [Test]
+        public void DeleteSingleConfiguration()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var result = Controller.Delete(configuration.ID) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, result.StatusCode);
+
+            Assert.AreEqual(0, repository.GetConfigurations().Count());
+        }
+
+        [Test]
+        public void DeleteOneOfTwoConfigurations()
+        {
+            var config1 = repository.AddConfiguration("test", 1, false);
+            var config2 = repository.AddConfiguration("test2", 1, false);
+
+            var deleteResult = Controller.Delete(config2.ID) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, deleteResult.StatusCode);
+
+            Assert.AreEqual(1, repository.GetConfigurations().Count());
+
+            var getResult = Controller.Get(config1.ID) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, getResult.StatusCode);
+
+            config1.AssertEqualTo(getResult.Value as PollConfiguration);
+        }
+
+        [Test]
+        public void DeleteWithEmptyRepository()
+        {
+            var deleteResult = Controller.Delete(12) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.NotFound, deleteResult.StatusCode);
+        }
+
+        [Test]
+        public void DeleteInvalidID()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var deleteResult = Controller.Delete(configuration.ID + 1) as IStatusCodeActionResult;
+
+            Assert.AreEqual((int)HttpStatusCode.NotFound, deleteResult.StatusCode);
+
+            var getResult = Controller.Get(configuration.ID) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, getResult.StatusCode);
+
+            configuration.AssertEqualTo(getResult.Value as PollConfiguration);
+        }
     }
 }
