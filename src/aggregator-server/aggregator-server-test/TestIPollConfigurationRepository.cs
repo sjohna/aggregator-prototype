@@ -62,24 +62,22 @@ namespace aggregator_server_test
         }
 
         [Test]
-        public void GetPresentConfigurationByID()
+        public void GetPresentConfiguration()
         {
             var addedConfiguration = repository.AddConfiguration("test1", 7, true);
             var gottenConfiguration = repository.GetConfiguration(addedConfiguration.ID);
 
-            Assert.AreEqual(addedConfiguration.ID, gottenConfiguration.ID);
-            Assert.AreEqual(addedConfiguration.URL, gottenConfiguration.URL);
-            Assert.AreEqual(addedConfiguration.PollIntervalMinutes, gottenConfiguration.PollIntervalMinutes);
+            addedConfiguration.AssertEqualTo(gottenConfiguration);
         }
 
         [Test]
-        public void GetConfigurationByIDInEmptyRepository()
+        public void GetConfigurationInEmptyRepository()
         {
             Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(1));
         }
 
         [Test]
-        public void GetAbsentConfigurationByIDInNonEmptyRepository()
+        public void GetAbsentConfigurationInNonEmptyRepository()
         {
             var addedConfiguration = repository.AddConfiguration("test1", 7, true);
 
@@ -106,29 +104,14 @@ namespace aggregator_server_test
             Assert.AreEqual(configuration.PollIntervalMinutes, updatedConfiguration.PollIntervalMinutes);
             Assert.AreEqual(polledTime, updatedConfiguration.LastPollInformation.PolledTime);
             Assert.AreEqual(successful, updatedConfiguration.LastPollInformation.Successful);
-        }
 
-        public void GetConfigurationAfterSettingPollInformation()
-        {
-            var addedConfiguration = repository.AddConfiguration("test1", 7, true);
+            var gottenConfiguration = repository.GetConfiguration(configuration.ID);    // test that updated LAstPollConfiguration is present when getting the updated configuration
 
-            var polledTime = Instant.FromUnixTimeSeconds(1000000000);
-            var successful = true;
-
-            var updatedConfiguration = repository.SetConfigurationLastPollInformation(addedConfiguration.ID,
-                new PollingInformation()
-                {
-                    PolledTime = polledTime,
-                    Successful = successful
-                });
-
-            var gottenConfiguration = repository.GetConfiguration(addedConfiguration.ID);
-
-            Assert.AreEqual(gottenConfiguration.ID, updatedConfiguration.ID);
-            Assert.AreEqual(gottenConfiguration.URL, updatedConfiguration.URL);
-            Assert.AreEqual(gottenConfiguration.PollIntervalMinutes, updatedConfiguration.PollIntervalMinutes);
-            Assert.AreEqual(polledTime, updatedConfiguration.LastPollInformation.PolledTime);
-            Assert.AreEqual(successful, updatedConfiguration.LastPollInformation.Successful);
+            Assert.AreEqual(configuration.ID, gottenConfiguration.ID);
+            Assert.AreEqual(configuration.URL, gottenConfiguration.URL);
+            Assert.AreEqual(configuration.PollIntervalMinutes, gottenConfiguration.PollIntervalMinutes);
+            Assert.AreEqual(polledTime, gottenConfiguration.LastPollInformation.PolledTime);
+            Assert.AreEqual(successful, gottenConfiguration.LastPollInformation.Successful);
         }
 
         [Test]
@@ -175,10 +158,7 @@ namespace aggregator_server_test
 
             var configInRepository = repository.GetConfigurations().First();
 
-            Assert.AreEqual(config2.Active, configInRepository.Active);
-            Assert.AreEqual(config2.ID, configInRepository.ID);
-            Assert.AreEqual(config2.PollIntervalMinutes, configInRepository.PollIntervalMinutes);
-            Assert.AreEqual(config2.URL, configInRepository.URL);
+            config2.AssertEqualTo(configInRepository);
         }
 
         [Test]
@@ -198,10 +178,7 @@ namespace aggregator_server_test
 
             var configurationInRepository = repository.GetConfigurations().First();
 
-            Assert.AreEqual("test", configurationInRepository.URL);
-            Assert.AreEqual(7, configurationInRepository.PollIntervalMinutes);
-            Assert.IsTrue(configurationInRepository.Active);
-            Assert.IsNull(configurationInRepository.LastPollInformation);
+            configuration.AssertEqualTo(configurationInRepository);
         }
     }
 }
