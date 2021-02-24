@@ -39,7 +39,7 @@ namespace aggregator_server.Controllers
         {
             try
             {
-                return Ok(m_repository.GetConfigurationByID(id));
+                return Ok(m_repository.GetConfiguration(id));
             }
             catch (RepositoryItemNotFoundException rinfe)
             {

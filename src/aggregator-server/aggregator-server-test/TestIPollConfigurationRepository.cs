@@ -65,7 +65,7 @@ namespace aggregator_server_test
         public void GetPresentConfigurationByID()
         {
             var addedConfiguration = repository.AddConfiguration("test1", 7, true);
-            var gottenConfiguration = repository.GetConfigurationByID(addedConfiguration.ID);
+            var gottenConfiguration = repository.GetConfiguration(addedConfiguration.ID);
 
             Assert.AreEqual(addedConfiguration.ID, gottenConfiguration.ID);
             Assert.AreEqual(addedConfiguration.URL, gottenConfiguration.URL);
@@ -75,7 +75,7 @@ namespace aggregator_server_test
         [Test]
         public void GetConfigurationByIDInEmptyRepository()
         {
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfigurationByID(1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(1));
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace aggregator_server_test
         {
             var addedConfiguration = repository.AddConfiguration("test1", 7, true);
 
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfigurationByID(addedConfiguration.ID + 1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(addedConfiguration.ID + 1));
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace aggregator_server_test
                     Successful = successful
                 });
 
-            var gottenConfiguration = repository.GetConfigurationByID(addedConfiguration.ID);
+            var gottenConfiguration = repository.GetConfiguration(addedConfiguration.ID);
 
             Assert.AreEqual(gottenConfiguration.ID, updatedConfiguration.ID);
             Assert.AreEqual(gottenConfiguration.URL, updatedConfiguration.URL);
@@ -153,6 +153,55 @@ namespace aggregator_server_test
         {
             repository.AddConfiguration("test", 7, true);
             Assert.Throws<RepositoryConflictException>(() => repository.AddConfiguration("test", 2, false));
+        }
+
+        [Test]
+        public void DeleteOnlyConfiguration()
+        {
+            var configuration = repository.AddConfiguration("test", 7, true);
+            repository.DeleteConfiguration(configuration.ID);
+            Assert.AreEqual(0, repository.GetConfigurations().Count());
+        }
+
+        [Test]
+        public void DeleteOneOfTwoConfigurations()
+        {
+            var config1 = repository.AddConfiguration("test", 7, true);
+            var config2 = repository.AddConfiguration("test2", 9, true);
+
+            repository.DeleteConfiguration(config1.ID);
+
+            Assert.AreEqual(1, repository.GetConfigurations().Count());
+
+            var configInRepository = repository.GetConfigurations().First();
+
+            Assert.AreEqual(config2.Active, configInRepository.Active);
+            Assert.AreEqual(config2.ID, configInRepository.ID);
+            Assert.AreEqual(config2.PollIntervalMinutes, configInRepository.PollIntervalMinutes);
+            Assert.AreEqual(config2.URL, configInRepository.URL);
+        }
+
+        [Test]
+        public void DeleteInEmptyRepository()
+        {
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.DeleteConfiguration(1));
+        }
+
+        [Test]
+        public void DeleteInvalidConfigurationInNonEmptyRepository()
+        {
+            var configuration = repository.AddConfiguration("test", 7, true);
+
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.DeleteConfiguration(configuration.ID - 1));
+
+            Assert.AreEqual(1, repository.GetConfigurations().Count());
+
+            var configurationInRepository = repository.GetConfigurations().First();
+
+            Assert.AreEqual("test", configurationInRepository.URL);
+            Assert.AreEqual(7, configurationInRepository.PollIntervalMinutes);
+            Assert.IsTrue(configurationInRepository.Active);
+            Assert.IsNull(configurationInRepository.LastPollInformation);
         }
     }
 }

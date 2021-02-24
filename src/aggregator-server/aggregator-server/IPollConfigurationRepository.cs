@@ -15,6 +15,8 @@ namespace aggregator_server
 
         PollConfiguration SetConfigurationLastPollInformation(int configurationID, PollingInformation info);
 
-        PollConfiguration GetConfigurationByID(int id);
+        PollConfiguration GetConfiguration(int id);
+
+        void DeleteConfiguration(int id);
     }
 }

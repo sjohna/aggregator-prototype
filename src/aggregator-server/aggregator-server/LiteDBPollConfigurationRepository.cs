@@ -80,7 +80,7 @@ namespace aggregator_server
         {
             lock(database)
             {
-                var configuration = GetConfigurationByID(configurationID);
+                var configuration = GetConfiguration(configurationID);
 
                 configuration.LastPollInformation = info;
 
@@ -94,11 +94,11 @@ namespace aggregator_server
 
                 log.Info($"Updated configuration ID {configuration.ID} LastPollInformation to {info}"); // TODO: ToString for PollingInformation
 
-                return GetConfigurationByID(configurationID);
+                return GetConfiguration(configurationID);
             }
         }
 
-        public PollConfiguration GetConfigurationByID(int id)
+        public PollConfiguration GetConfiguration(int id)
         {
             var configuration = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Find(x => x.ID == id).FirstOrDefault();
 
@@ -106,6 +106,14 @@ namespace aggregator_server
                 throw new RepositoryItemNotFoundException($"PollConfiguration ID {id} not present in repository.");
 
             return configuration;
+        }
+
+        public void DeleteConfiguration(int id)
+        {
+            if(!database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Delete(id))
+            {
+                throw new RepositoryItemNotFoundException($"Pollconfiguration ID {id} not present in repository.");
+            }
         }
     }
 }
