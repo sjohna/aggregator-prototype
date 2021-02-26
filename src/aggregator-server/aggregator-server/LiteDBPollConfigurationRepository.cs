@@ -100,7 +100,7 @@ namespace aggregator_server
 
         public PollConfiguration GetConfiguration(int id)
         {
-            var configuration = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Find(x => x.ID == id).FirstOrDefault();
+            var configuration = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).FindById(id);
 
             if (configuration == null)
                 throw new RepositoryItemNotFoundException($"PollConfiguration ID {id} not present in repository.");
@@ -112,7 +112,25 @@ namespace aggregator_server
         {
             if(!database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Delete(id))
             {
-                throw new RepositoryItemNotFoundException($"Pollconfiguration ID {id} not present in repository.");
+                throw new RepositoryItemNotFoundException($"PollConfiguration ID {id} not present in repository.");
+            }
+        }
+
+        public void UpdateConfiguration(PollConfiguration configuration)
+        {
+            lock (database)
+            {
+                var configInDatabase = GetConfiguration(configuration.ID);
+
+                configInDatabase.PollIntervalMinutes = configuration.PollIntervalMinutes;
+                configInDatabase.Active = configuration.Active;
+
+                bool updated = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Update(configInDatabase);
+
+                if (!updated)
+                {
+                    throw new RepositoryItemNotFoundException($"PollConfiguration ID {configuration.ID} not present in repository.");
+                }
             }
         }
     }

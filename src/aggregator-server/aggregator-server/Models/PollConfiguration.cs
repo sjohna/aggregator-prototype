@@ -9,7 +9,7 @@ namespace aggregator_server.Models
     {
         public string URL { get; set; }
         public int PollIntervalMinutes { get; set; }
-        public int ID { get; set; }
+        public int ID { get; private set; }
         public bool Active { get; set; }
 
         public PollingInformation LastPollInformation { get; set; }

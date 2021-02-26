@@ -85,10 +85,31 @@ namespace aggregator_server.Controllers
         }
 
         // PUT api/<PollConfigurationController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] PollConfigurationTransferObject updatedConfiguration)
+        {
+            // TODO: all validation inside of repository?
+            if (updatedConfiguration.PollIntervalMinutes != null && updatedConfiguration.PollIntervalMinutes <= 0)
+            {
+                return BadRequest(new { ErrorMessage = "Poll interval must be greater than 0." });
+            }
+
+            try
+            {
+                var configuration = m_repository.GetConfiguration(id);
+                configuration.PollIntervalMinutes = updatedConfiguration.PollIntervalMinutes ?? configuration.PollIntervalMinutes;
+                configuration.Active = updatedConfiguration.Active ?? configuration.Active;
+
+                m_repository.UpdateConfiguration(configuration);
+
+                return Ok(configuration);
+            }
+            catch(RepositoryItemNotFoundException rinfe)
+            {
+                log.Warn($"Update request for invalid PollConfiguration ID {id}");
+                return NotFound(new { ErrorMessage = rinfe.Message });
+            }
+        }
 
         //DELETE api/<PollConfigurationController>/5
         [HttpDelete("{id}")]

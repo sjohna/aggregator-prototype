@@ -260,5 +260,98 @@ namespace aggregator_server_test
 
             configuration.AssertEqualTo(getResult.Value as PollConfiguration);
         }
+
+        [Test]
+        public void UpdateConfiguration_AllParameters()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var updateConfigurationInput = new PollConfigurationTransferObject()
+            {
+                PollIntervalMinutes = 7,
+                Active = true
+            };
+
+            var updateResult = Controller.Put(configuration.ID, updateConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, updateResult.StatusCode);
+
+            var resultParameter = updateResult.Value as PollConfiguration;
+
+            Assert.AreEqual(7, resultParameter.PollIntervalMinutes);
+            Assert.IsTrue(resultParameter.Active);
+        }
+
+        [Test]
+        public void UpdateConfiguration_Active()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var updateConfigurationInput = new PollConfigurationTransferObject()
+            {
+                Active = true
+            };
+
+            var updateResult = Controller.Put(configuration.ID, updateConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, updateResult.StatusCode);
+
+            var resultParameter = updateResult.Value as PollConfiguration;
+
+            Assert.AreEqual(1, resultParameter.PollIntervalMinutes);
+            Assert.IsTrue(resultParameter.Active);
+        }
+
+        [Test]
+        public void UpdateConfiguration_PollIntervalMinutes()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var updateConfigurationInput = new PollConfigurationTransferObject()
+            {
+                PollIntervalMinutes = 7
+            };
+
+            var updateResult = Controller.Put(configuration.ID, updateConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.OK, updateResult.StatusCode);
+
+            var resultParameter = updateResult.Value as PollConfiguration;
+
+            Assert.AreEqual(7, resultParameter.PollIntervalMinutes);
+            Assert.IsFalse(resultParameter.Active);
+        }
+
+        [Test]
+        public void UpdateInvalidID()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var updateConfigurationInput = new PollConfigurationTransferObject()
+            {
+                PollIntervalMinutes = 7,
+                Active = true
+            };
+
+            var updateResult = Controller.Put(configuration.ID + 1, updateConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.NotFound, updateResult.StatusCode);
+        }
+
+        [Test]
+        public void UpdateConfiguration_InvalidPollInterval()
+        {
+            var configuration = repository.AddConfiguration("test", 1, false);
+
+            var updateConfigurationInput = new PollConfigurationTransferObject()
+            {
+                PollIntervalMinutes = 0,
+                Active = true
+            };
+
+            var updateResult = Controller.Put(configuration.ID, updateConfigurationInput) as ObjectResult;
+
+            Assert.AreEqual((int)HttpStatusCode.BadRequest, updateResult.StatusCode);
+        }
     }
 }

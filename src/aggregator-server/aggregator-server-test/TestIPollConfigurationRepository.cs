@@ -180,5 +180,69 @@ namespace aggregator_server_test
 
             configuration.AssertEqualTo(configurationInRepository);
         }
+
+        [Test]
+        public void UpdatePollConfigurationParameters()
+        {
+            var configuration = repository.AddConfiguration("test", 7, true);
+
+            configuration.Active = false;
+            configuration.PollIntervalMinutes = 10;
+
+            repository.UpdateConfiguration(configuration);
+
+            var gottenConfiguration = repository.GetConfiguration(configuration.ID);
+
+            Assert.IsFalse(gottenConfiguration.Active);
+            Assert.AreEqual(10, gottenConfiguration.PollIntervalMinutes);
+            Assert.AreEqual("test", gottenConfiguration.URL);
+            Assert.IsNull(gottenConfiguration.LastPollInformation);
+        }
+
+        [Test]
+        public void UpdateDeletedPollConfiguration()
+        {
+            var configuration = repository.AddConfiguration("test", 7, true);
+            repository.DeleteConfiguration(configuration.ID);
+
+            configuration.PollIntervalMinutes = 10;
+
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.UpdateConfiguration(configuration));
+        }
+
+        [Test]
+        public void UpdatePollConfigurationWithNoChanges()
+        {
+            var configuration = repository.AddConfiguration("test", 7, true);
+
+            repository.UpdateConfiguration(configuration);
+
+            var gottenConfiguration = repository.GetConfiguration(configuration.ID);
+
+            configuration.AssertEqualTo(gottenConfiguration);
+        }
+
+        [Test]
+        public void UpdateConfigurationDoesNotAffectLastPollInformation()
+        {
+            var configuration = repository.AddConfiguration("test", 7, true);
+
+            var polledTime = Instant.FromUnixTimeSeconds(1000000000);
+            var successful = true;
+
+            var pollInfo = new PollingInformation()
+            {
+                PolledTime = polledTime,
+                Successful = successful
+            };
+
+            repository.SetConfigurationLastPollInformation(configuration.ID, pollInfo);
+            repository.UpdateConfiguration(configuration);
+
+            var gottenConfiguration = repository.GetConfiguration(configuration.ID);
+
+            Assert.AreEqual(polledTime, gottenConfiguration.LastPollInformation.PolledTime);
+            Assert.AreEqual(successful, gottenConfiguration.LastPollInformation.Successful);
+        }
     }
 }
