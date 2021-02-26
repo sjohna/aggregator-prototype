@@ -35,7 +35,8 @@ export class PollConfigurationViewerComponent implements OnInit {
         this.httpClient.post<PollConfiguration>('https://localhost:44335/api/configuration/poll',
           {
             URL: result.configurationURL,
-            pollIntervalMinutes: Number(result.pollIntervalMinutes)
+            pollIntervalMinutes: Number(result.pollIntervalMinutes),
+            active: result.active
           }).subscribe(value => { console.log('Add successful'); this.getConfigurations(); } );
 
         this.getConfigurations();

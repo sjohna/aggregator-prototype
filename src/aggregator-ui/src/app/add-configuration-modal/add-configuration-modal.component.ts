@@ -10,8 +10,12 @@ export class AddConfigurationModalComponent implements OnInit {
 
   public configurationURL?: string;
   public pollIntervalMinutes?: number;
+  public active: boolean;
 
-  constructor(public dialogRef: MatDialogRef<AddConfigurationModalComponent>) { }
+  constructor(public dialogRef: MatDialogRef<AddConfigurationModalComponent>)
+  {
+    this.active = true;
+  }
 
   ngOnInit(): void {
   }
@@ -21,7 +25,8 @@ export class AddConfigurationModalComponent implements OnInit {
       {
         add: true,
         configurationURL: this.configurationURL,
-        pollIntervalMinutes: this.pollIntervalMinutes
+        pollIntervalMinutes: this.pollIntervalMinutes,
+        active: this.active
       });
   }
 
