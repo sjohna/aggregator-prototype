@@ -96,7 +96,7 @@ namespace aggregator_server.Controllers
 
             try
             {
-                var configuration = m_repository.GetConfiguration(id);
+                var configuration = m_repository.GetConfiguration(id);  // TODO: Race condition: it's possible for one write affecting only the PollInterval and anther one affecting only Active to interleave poorly, resulting in only one change taking place...
                 configuration.PollIntervalMinutes = updatedConfiguration.PollIntervalMinutes ?? configuration.PollIntervalMinutes;
                 configuration.Active = updatedConfiguration.Active ?? configuration.Active;
 
