@@ -68,7 +68,7 @@ namespace aggregator_server.Controllers
                 bool active = newConfiguration.Active ?? true;
 
                 var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value, active);
-                configLog.Info($"Added poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}");
+                configLog.Info($"[ADD] poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}, Active = {addedConfiguration.Active}");
 
                 return Ok(addedConfiguration);
             }
@@ -101,6 +101,7 @@ namespace aggregator_server.Controllers
                 configuration.Active = updatedConfiguration.Active ?? configuration.Active;
 
                 m_repository.UpdateConfiguration(configuration);
+                configLog.Info($"[UPDATE] poll configuration: ID = {configuration.ID}, Interval = {configuration.PollIntervalMinutes}, URL = {configuration.URL}, Active = {configuration.Active}");
 
                 return Ok(configuration);
             }
@@ -118,6 +119,7 @@ namespace aggregator_server.Controllers
             try
             {
                 m_repository.DeleteConfiguration(id);
+                configLog.Info($"[DELETE] poll configuration: ID = {id}");
 
                 return Ok();
             }
