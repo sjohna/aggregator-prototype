@@ -4,7 +4,7 @@
     <p> <!-- Using p tags to make the elements appear on separate lines doesn't cause a scrollbar to appear. Using br tags in between does. -->
         <mat-form-field>
             <mat-label>URL</mat-label> 
-            <input matInput [(ngModel)]="configurationURL"/>
+            <input matInput [(ngModel)]="configurationURL" [disabled]="!enableURLInput"/>
         </mat-form-field>
     </p>
     <p>

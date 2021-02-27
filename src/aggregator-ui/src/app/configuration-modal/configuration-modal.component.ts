@@ -13,6 +13,7 @@ export class ConfigurationModalComponent implements OnInit {
   public pollIntervalMinutes?: number;
   public active: boolean;
   public operation: string;
+  public enableURLInput: boolean;
 
   constructor(public dialogRef: MatDialogRef<ConfigurationModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data:
@@ -20,13 +21,15 @@ export class ConfigurationModalComponent implements OnInit {
                   operation: string,
                   configurationURL?: string,
                   pollIntervalMinutes?: number,
-                  active?: boolean
+                  active?: boolean,
+                  enableURLInput?: boolean
                 })
   {
     this.active = data.active ?? true;
     this.configurationURL = data.configurationURL;
     this.pollIntervalMinutes = data.pollIntervalMinutes;
     this.operation = data.operation;
+    this.enableURLInput = data.enableURLInput ?? true;
   }
 
   ngOnInit(): void {

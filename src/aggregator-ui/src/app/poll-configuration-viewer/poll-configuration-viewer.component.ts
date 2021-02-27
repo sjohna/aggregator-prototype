@@ -59,7 +59,8 @@ export class PollConfigurationViewerComponent implements OnInit {
           operation: 'Update',
           configurationURL: configuration.url,
           pollIntervalMinutes: configuration.pollIntervalMinutes,
-          active: configuration.active
+          active: configuration.active,
+          enableURLInput: false
         }
       });
 
