@@ -1,20 +1,23 @@
+import { hostViewClassName } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-add-configuration-modal',
-  templateUrl: './add-configuration-modal.component.html',
-  styleUrls: ['./add-configuration-modal.component.css']
+  selector: 'app-configuration-modal',
+  templateUrl: './configuration-modal.component.html',
+  styleUrls: ['./configuration-modal.component.css']
 })
-export class AddConfigurationModalComponent implements OnInit {
+export class ConfigurationModalComponent implements OnInit {
 
   public configurationURL?: string;
   public pollIntervalMinutes?: number;
   public active: boolean;
+  public operation: string;
 
-  constructor(public dialogRef: MatDialogRef<AddConfigurationModalComponent>)
+  constructor(public dialogRef: MatDialogRef<ConfigurationModalComponent>)
   {
     this.active = true;
+    this.operation = 'Addily-ho';
   }
 
   ngOnInit(): void {

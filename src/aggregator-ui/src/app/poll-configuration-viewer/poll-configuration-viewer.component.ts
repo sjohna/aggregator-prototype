@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PollConfiguration } from './pollConfiguration';
-import { AddConfigurationModalComponent } from '../add-configuration-modal/add-configuration-modal.component';
+import { ConfigurationModalComponent } from '../configuration-modal/configuration-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -25,7 +25,7 @@ export class PollConfigurationViewerComponent implements OnInit {
   }
 
   showAddConfigurationDialog(): void {
-    const dialogRef = this.dialog.open(AddConfigurationModalComponent);
+    const dialogRef = this.dialog.open(ConfigurationModalComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result.add)
