@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Poll Configuration</h2>
+<h2 mat-dialog-title>{{operation}} Poll Configuration</h2>
 
 <mat-dialog-content>
     <p> <!-- Using p tags to make the elements appear on separate lines doesn't cause a scrollbar to appear. Using br tags in between does. -->
@@ -21,6 +21,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button mat-button (click)="closeAndAdd()">Add Configuration</button>
+    <button mat-button (click)="closeAndAdd()">{{operation}} Configuration</button>
     <button mat-button (click)="close()">Cancel</button>
 </mat-dialog-actions>

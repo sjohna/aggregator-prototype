@@ -25,10 +25,13 @@ export class PollConfigurationViewerComponent implements OnInit {
   }
 
   showAddConfigurationDialog(): void {
-    const dialogRef = this.dialog.open(ConfigurationModalComponent);
+    const dialogRef = this.dialog.open(
+      ConfigurationModalComponent, {
+        data: { operation: 'Add' }
+      });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result.add)
+      if (result.doOperation)
       {
         console.log(`Adding: ${result.configurationURL}, interval ${result.pollIntervalMinutes}`);
 
@@ -44,6 +47,38 @@ export class PollConfigurationViewerComponent implements OnInit {
       else
       {
         console.log(`Add cancelled`);
+      }
+    });
+  }
+
+  showUpdateConfigurationDialog(configuration: PollConfiguration): void {
+    const dialogRef = this.dialog.open(
+      ConfigurationModalComponent, {
+        data:
+        {
+          operation: 'Update',
+          configurationURL: configuration.url,
+          pollIntervalMinutes: configuration.pollIntervalMinutes,
+          active: configuration.active
+        }
+      });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.doOperation)
+      {
+        console.log(`Updating: ${configuration.id}`);
+
+        this.httpClient.put<PollConfiguration>(`https://localhost:44335/api/configuration/poll/${configuration.id}`,
+          {
+            pollIntervalMinutes: Number(result.pollIntervalMinutes),
+            active: result.active
+          }).subscribe(value => { console.log('Update successful'); this.getConfigurations(); } );
+
+        this.getConfigurations();
+      }
+      else
+      {
+        console.log(`Update cancelled`);
       }
     });
   }
