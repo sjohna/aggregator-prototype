@@ -14,12 +14,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PollConfigurationViewerComponent,
-    ConfigurationModalComponent
+    ConfigurationModalComponent,
+    ConfirmModalComponent
   ],
   imports: [
     BrowserModule,
@@ -34,8 +36,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatListModule,
     MatCheckboxModule
   ],
-  entryComponents: [
-    ConfigurationModalComponent
+  entryComponents: [  // Is this necessary? I was able to instantiate the ConfirmModal without it being in this list...
+    ConfigurationModalComponent,
+    ConfirmModalComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

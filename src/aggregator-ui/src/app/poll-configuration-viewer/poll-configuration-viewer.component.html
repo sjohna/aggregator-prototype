@@ -5,6 +5,7 @@
     <mat-list-item *ngFor="let configuration of configurations">
         ID = {{configuration.id}}, URL = {{configuration.url}}, Poll Interval = {{configuration.pollIntervalMinutes}} Minutes ({{configuration.active ? 'Active' : 'Inactive'}})
         <button mat-raised-button (click)="showUpdateConfigurationDialog(configuration)">Update</button>
+        <button mat-raised-button (click)="showDeleteConfigurationDialog(configuration)">Delete</button>
     </mat-list-item>
 </mat-list>
 

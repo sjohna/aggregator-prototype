@@ -1,4 +1,3 @@
-import { hostViewClassName } from '@angular/compiler';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -36,19 +35,17 @@ export class ConfigurationModalComponent implements OnInit {
   }
 
   closeAndAdd(): void {
-    this.dialogRef.close(
-      {
-        doOperation: true,
-        configurationURL: this.configurationURL,
-        pollIntervalMinutes: this.pollIntervalMinutes,
-        active: this.active
-      });
+    this.dialogRef.close({
+      doOperation: true,
+      configurationURL: this.configurationURL,
+      pollIntervalMinutes: this.pollIntervalMinutes,
+      active: this.active
+    });
   }
 
   close(): void {
-    this.dialogRef.close(
-      {
-        doOperation: false
-      });
+    this.dialogRef.close({
+      doOperation: false
+    });
   }
 }

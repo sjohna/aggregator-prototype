@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PollConfiguration } from './pollConfiguration';
 import { ConfigurationModalComponent } from '../configuration-modal/configuration-modal.component';
+import { ConfirmModalComponent } from '../confirm-modal/confirm-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -80,6 +81,34 @@ export class PollConfigurationViewerComponent implements OnInit {
       else
       {
         console.log(`Update cancelled`);
+      }
+    });
+  }
+
+  showDeleteConfigurationDialog(configuration: PollConfiguration): void {
+    const dialogRef = this.dialog.open(
+      ConfirmModalComponent, {
+        data:
+        {
+          title: 'Confirm Delete',
+          message: `Really delete configuration for ${configuration.url}?`,
+          confirmText: 'Delete'
+        }
+      });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.confirm)
+      {
+        console.log(`Deleting: ${configuration.id}`);
+
+        this.httpClient.delete<PollConfiguration>(`https://localhost:44335/api/configuration/poll/${configuration.id}`)
+          .subscribe(value => { console.log('Delete successful'); this.getConfigurations(); } );
+
+        this.getConfigurations();
+      }
+      else
+      {
+        console.log(`Delete cancelled`);
       }
     });
   }
