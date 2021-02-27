@@ -39,6 +39,7 @@ namespace aggregator_server
             {
                 while (true)
                 {
+                    // TODO: better logging here, maybe? Should I explicitly log when a configuration is skipped due to being inactive? Maybe at the Debug level...
                     await intervalTask;
                     intervalTask = Task.Delay(PollIntervalMS, CancelToken);
 
@@ -50,7 +51,11 @@ namespace aggregator_server
                     {
                         bool doPoll = false;
 
-                        if (pollConfiguration.LastPollInformation == null)
+                        if (!pollConfiguration.Active)
+                        {
+                            doPoll = false;
+                        }
+                        else if (pollConfiguration.LastPollInformation == null)
                         {
                             log.Info($"Configuration check: Configuration {pollConfiguration.ID} ({pollConfiguration.URL}) has never been polled.");
                             doPoll = true;
