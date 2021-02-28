@@ -1,10 +1,16 @@
-﻿using log4net;
+﻿using aggregator_server.Models;
+using log4net;
 using NodaTime;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.ServiceModel.Syndication;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace aggregator_server
 {
@@ -19,12 +25,14 @@ namespace aggregator_server
 
         private CancellationToken CancelToken => m_cancelTokenSource.Token;
 
-        private IPollConfigurationRepository repository;
+        private IPollConfigurationRepository configurationRepository;
+        private IDocumentRepository documentRepository;
 
-        public Poller(int pollIntervalMs, IPollConfigurationRepository repository)
+        public Poller(int pollIntervalMs, IPollConfigurationRepository configurationRepository, IDocumentRepository documentRepository)
         {
             this.PollIntervalMS = pollIntervalMs;
-            this.repository = repository;
+            this.configurationRepository = configurationRepository;
+            this.documentRepository = documentRepository;
 
             m_cancelTokenSource = new CancellationTokenSource();
         }
@@ -47,7 +55,7 @@ namespace aggregator_server
 
                     Instant pollTime = NodaTime.SystemClock.Instance.GetCurrentInstant();
 
-                    foreach (var pollConfiguration in repository.GetConfigurations())
+                    foreach (var pollConfiguration in configurationRepository.GetConfigurations())
                     {
                         bool doPoll = false;
 
@@ -74,9 +82,12 @@ namespace aggregator_server
                         {
                             log.Info($"Polling configuration {pollConfiguration.ID} ({pollConfiguration.URL}).");
 
+                            // actually do poll here
+                            PollFeed(pollConfiguration.URL);
+
                             var LastPollInformation = new Models.PollingInformation() { Successful = true, PolledTime = pollTime };
 
-                            repository.SetConfigurationLastPollInformation(pollConfiguration.ID, LastPollInformation);
+                            configurationRepository.SetConfigurationLastPollInformation(pollConfiguration.ID, LastPollInformation);
                         }
                     }
                 }
@@ -87,6 +98,91 @@ namespace aggregator_server
             }
 
             configLog.Info("Polling loop ended.");
+        }
+
+        void PollFeed(string feedUri)
+        {
+            // TODO: figure out automated test strategy for polling logic
+
+            var pollTime = DateTime.Now;
+
+            Console.WriteLine($"At {pollTime}, polling {feedUri}");
+
+            using (var client = new WebClient())
+            {
+                string text = client.DownloadString(feedUri);
+                byte[] bytes = Encoding.UTF8.GetBytes(text);
+
+                using (var inputStream = new MemoryStream(bytes))
+                using (var reader = XmlReader.Create(inputStream))
+                {
+                    var feed = SyndicationFeed.Load(reader);
+                    Console.WriteLine($"Poll response: {feed.Items.Count()} items, {bytes.Length} bytes");
+
+                    foreach (var post in feed.Items)
+                    {
+                        var sourceID = post.Id;
+
+                        var docs = documentRepository.FindBySourceID(sourceID);
+
+                        if (docs.Count() == 0)
+                        {
+                            var doc = new Document()
+                            {
+                                Content = (post.Content as TextSyndicationContent)?.Text,   // TODO: validation here
+                                PublishTime = Instant.FromDateTimeOffset(post.PublishDate), // TODO: test this...
+                                SourceID = sourceID,
+                                SourceLink = post.Links.FirstOrDefault().Uri.ToString(),   // TODO: validate this, and maybe change the type
+                                Title = post.Title.Text,
+                                UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime)
+                            };
+
+                            documentRepository.AddDocument(doc);
+
+                            log.Info("Added new document:");
+                            LogDocument(doc);
+                        }
+                        else if (docs.Count() == 1)
+                        {
+                            // TODO: Race condition...
+                            var matchingDoc = docs.First();
+
+                            var updateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
+
+                            if (matchingDoc.UpdateTime < updateTime)
+                            {
+                                matchingDoc.Content = (post.Content as TextSyndicationContent)?.Text;   // TODO: validation here
+                                matchingDoc.PublishTime = Instant.FromDateTimeOffset(post.PublishDate); // TODO: test this...
+                                matchingDoc.SourceID = sourceID;
+                                matchingDoc.SourceLink = post.Links.FirstOrDefault().Uri.ToString();   // TODO: validate this, and maybe change the type
+                                matchingDoc.Title = post.Title.Text;
+                                matchingDoc.UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
+
+                                documentRepository.UpdateDocument(matchingDoc);
+
+                                log.Info($"Updated document {matchingDoc.ID}:");
+                                LogDocument(matchingDoc);
+                            }
+                            else
+                            {
+                                log.Debug($"Document {matchingDoc.ID} ({matchingDoc.SourceID}) present in feed, but not updated.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine();
+        }
+
+        void LogDocument(Document doc)
+        {
+            log.Info($"Title: ${doc.Title}");
+            log.Info($"Source ID: ${doc.SourceID}");
+            log.Info($"Source Link: ${doc.SourceLink}");
+            log.Info($"Publish Time: ${doc.PublishTime}");
+            log.Info($"Update Time: ${doc.UpdateTime}");
+            log.Info($"Content length: ${doc.Content.Length}");
         }
 
         public void CancelPolling()

@@ -53,6 +53,16 @@ namespace aggregator_server
             return database.GetCollection<Document>(DocumentCollectionName).FindAll();    // TODO: do I need to copy this to its own list?
         }
 
+        public void UpdateDocument(Document doc)
+        {
+            database.GetCollection<Document>(DocumentCollectionName).Update(doc);
+        }
+
+        public IEnumerable<Document> FindBySourceID(string sourceID)
+        {
+            return database.GetCollection<Document>(DocumentCollectionName).Find(doc => doc.SourceID == sourceID);  // TODO: do I need to copy this to its own list?
+        }
+
         public void Dispose()
         {
             

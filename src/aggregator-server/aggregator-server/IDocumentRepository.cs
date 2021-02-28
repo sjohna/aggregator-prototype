@@ -11,5 +11,9 @@ namespace aggregator_server
         IEnumerable<Document> GetDocuments();
 
         Document AddDocument(Document doc); // returns the document as added in the repository
+
+        void UpdateDocument(Document doc);
+
+        IEnumerable<Document> FindBySourceID(string sourceID);
     }
 }

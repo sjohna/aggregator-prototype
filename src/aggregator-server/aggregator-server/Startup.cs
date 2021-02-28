@@ -43,12 +43,14 @@ namespace aggregator_server
 
             var databaseStream = new MemoryStream();
             var database = new LiteDB.LiteDatabase(databaseStream);
-            var repository = new LiteDBPollConfigurationRepository(database);
+            var pollConfigurationRepository = new LiteDBPollConfigurationRepository(database);
+            var documentRepository = new LiteDBDocumentRepository(database);
 
-            var poller = new Poller(5000, repository);
+            var poller = new Poller(5000, pollConfigurationRepository, documentRepository);    // TODO: fix parameters
             var pollerTask = poller.DoPollingLoop();
 
-            services.AddSingleton(typeof(IPollConfigurationRepository), repository);
+            services.AddSingleton(typeof(IPollConfigurationRepository), pollConfigurationRepository);
+            services.AddSingleton(typeof(IDocumentRepository), documentRepository);
 
             services.AddControllers();
             
