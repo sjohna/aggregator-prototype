@@ -1,0 +1,17 @@
+<h2>Documents</h2>
+<ul>
+  <li *ngFor="let document of documents"
+    (click)="onSelect(document)">
+    {{document.title}}
+  </li>
+</ul>
+
+<button mat-raised-button (click)="getDocuments()">Refresh</button>
+
+<div *ngIf="selectedDocument">
+
+  <h2>{{selectedDocument.title}}</h2>
+  <div>Updated: {{selectedDocument.updateTime}}</div>
+  <div [innerHtml]="selectedDocument.content"></div>
+
+</div>

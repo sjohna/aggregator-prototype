@@ -15,13 +15,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
+import { DocumentDisplayComponent } from './document-display/document-display.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PollConfigurationViewerComponent,
     ConfigurationModalComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    DocumentDisplayComponent
   ],
   imports: [
     BrowserModule,
