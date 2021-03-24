@@ -45,24 +45,33 @@ namespace aggregator_server
             patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
             patternLayout.ActivateOptions();
 
-            RollingFileAppender startupAppender = CreateRollingFileAppender(Path.Combine(LogDirectory, "StartupAndConfigure.log"), patternLayout);
+            RollingFileAppender startupAppender = CreateRollingFileAppender(Path.Combine(LogDirectory, "All-StartupAndConfigure.log"), patternLayout);
 
             var startupLogger = LogManager.GetLogger("Config").Logger as Logger;
             startupLogger.AddAppender(startupAppender);
 
-            RollingFileAppender allLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "All.log"), patternLayout);
-            hierarchy.Root.AddAppender(allLog);
-
-            RollingFileAppender anomalousLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "Anomalous.log"), patternLayout);
+            RollingFileAppender anomalousLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "All-Anomalous.log"), patternLayout);
 
             ForwardingAppender allToAnomalousforwarder = new ForwardingAppender();
             allToAnomalousforwarder.AddAppender(anomalousLog);
             allToAnomalousforwarder.AddFilter(new log4net.Filter.LevelRangeFilter() { AcceptOnMatch = true, LevelMin=Level.Warn, LevelMax=Level.Fatal });
             hierarchy.Root.AddAppender(allToAnomalousforwarder);
 
-            startupLogger.AddAppender(anomalousLog);
+            RollingFileAppender infoLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "All-Info.log"), patternLayout);
 
-            hierarchy.Root.Level = Level.Info;
+            ForwardingAppender allToInfoForwarder = new ForwardingAppender();
+            allToInfoForwarder.AddAppender(infoLog);
+            allToInfoForwarder.AddFilter(new log4net.Filter.LevelRangeFilter() { AcceptOnMatch = true, LevelMin = Level.Info, LevelMax = Level.Fatal });
+            hierarchy.Root.AddAppender(allToInfoForwarder);
+
+            RollingFileAppender debugLog = CreateRollingFileAppender(Path.Combine(LogDirectory, "All-Debug.log"), patternLayout);
+
+            ForwardingAppender allToDebugForwarder = new ForwardingAppender();
+            allToDebugForwarder.AddAppender(debugLog);
+            allToDebugForwarder.AddFilter(new log4net.Filter.LevelRangeFilter() { AcceptOnMatch = true, LevelMin = Level.Debug, LevelMax = Level.Fatal });
+            hierarchy.Root.AddAppender(allToDebugForwarder);
+
+            hierarchy.Root.Level = Level.Debug;
             hierarchy.Configured = true;
         }
 

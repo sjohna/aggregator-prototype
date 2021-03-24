@@ -51,7 +51,7 @@ namespace aggregator_server
                     await intervalTask;
                     intervalTask = Task.Delay(PollIntervalMS, CancelToken);
 
-                    log.Info("Checking for updates.");
+                    log.Debug("Checking for updates.");
 
                     Instant pollTime = NodaTime.SystemClock.Instance.GetCurrentInstant();
 
@@ -106,7 +106,7 @@ namespace aggregator_server
 
             var pollTime = DateTime.Now;
 
-            Console.WriteLine($"At {pollTime}, polling {feedUri}");
+            log.Info($"At {pollTime}, polling {feedUri}");
 
             using (var client = new WebClient())
             {
@@ -117,7 +117,7 @@ namespace aggregator_server
                 using (var reader = XmlReader.Create(inputStream))
                 {
                     var feed = SyndicationFeed.Load(reader);
-                    Console.WriteLine($"Poll response: {feed.Items.Count()} items, {bytes.Length} bytes");
+                    log.Info($"Poll response: {feed.Items.Count()} items, {bytes.Length} bytes");
 
                     foreach (var post in feed.Items)
                     {
@@ -177,12 +177,12 @@ namespace aggregator_server
 
         void LogDocument(Document doc)
         {
-            log.Info($"Title: ${doc.Title}");
-            log.Info($"Source ID: ${doc.SourceID}");
-            log.Info($"Source Link: ${doc.SourceLink}");
-            log.Info($"Publish Time: ${doc.PublishTime}");
-            log.Info($"Update Time: ${doc.UpdateTime}");
-            log.Info($"Content length: ${doc.Content.Length}");
+            log.Info($"Title: {doc.Title}");
+            log.Info($"Source ID: {doc.SourceID}");
+            log.Info($"Source Link: {doc.SourceLink}");
+            log.Info($"Publish Time: {doc.PublishTime}");
+            log.Info($"Update Time: {doc.UpdateTime}");
+            log.Info($"Content length: {doc.Content.Length}");
         }
 
         public void CancelPolling()
