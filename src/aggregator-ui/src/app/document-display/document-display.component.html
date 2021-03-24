@@ -1,6 +1,7 @@
 <h2>Documents</h2>
-<ul>
+<ul class="docList">
   <li *ngFor="let document of documents"
+  [class.selected]="document === selectedDocument"
     (click)="onSelect(document)">
     {{document.title}}
   </li>
