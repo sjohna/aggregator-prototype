@@ -133,7 +133,7 @@ namespace aggregator_server
                                 PublishTime = Instant.FromDateTimeOffset(post.PublishDate), // TODO: test this...
                                 SourceID = sourceID,
                                 SourceLink = post.Links.FirstOrDefault().Uri.ToString(),   // TODO: validate this, and maybe change the type
-                                Title = post.Title.Text,
+                                Title = WebUtility.HtmlDecode(post.Title.Text), // TODO: do this in one place so that it isn't duplicated with the update...
                                 UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime)
                             };
 
@@ -155,7 +155,7 @@ namespace aggregator_server
                                 matchingDoc.PublishTime = Instant.FromDateTimeOffset(post.PublishDate); // TODO: test this...
                                 matchingDoc.SourceID = sourceID;
                                 matchingDoc.SourceLink = post.Links.FirstOrDefault().Uri.ToString();   // TODO: validate this, and maybe change the type
-                                matchingDoc.Title = post.Title.Text;
+                                matchingDoc.Title = WebUtility.HtmlDecode(post.Title.Text);
                                 matchingDoc.UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
 
                                 documentRepository.UpdateDocument(matchingDoc);
