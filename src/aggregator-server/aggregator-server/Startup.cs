@@ -18,6 +18,8 @@ namespace aggregator_server
     {
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
+        readonly string DatabaseFilePath = "Database/database.bin";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -41,8 +43,12 @@ namespace aggregator_server
 
             LiteDBFunctions.DoLiteDBGlobalSetUp();
 
-            var databaseStream = new MemoryStream();
-            var database = new LiteDB.LiteDatabase(databaseStream);
+            //var databaseStream = new MemoryStream();
+
+            var databaseDirectory = Path.GetDirectoryName(DatabaseFilePath);
+            Directory.CreateDirectory(databaseDirectory);   // TODO: error handling
+
+            var database = new LiteDB.LiteDatabase($"Filename={DatabaseFilePath}");
             var pollConfigurationRepository = new LiteDBPollConfigurationRepository(database);
             var documentRepository = new LiteDBDocumentRepository(database);
 

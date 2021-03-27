@@ -32,11 +32,10 @@ namespace aggregator_server
 
             var collection = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName);
 
+            configLog.Info($"Collection {PollConfigurationCollectionName} contains {collection.Count()} records.");
+
             if (collection.EnsureIndex(configuration => configuration.URL))
                 configLog.Info($"Collection {PollConfigurationCollectionName}: URL index created");
-
-            if (collection.EnsureIndex(configuration => configuration.ID))
-                configLog.Info($"Collection {PollConfigurationCollectionName}: ID index created");
 
             var mapper = BsonMapper.Global;
             mapper.Entity<PollConfiguration>().Id(x => x.ID);

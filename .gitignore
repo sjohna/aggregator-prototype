@@ -1,3 +1,6 @@
+#Development databases
+**/Database/*.bin
+
 *.swp
 *.*~
 project.lock.json

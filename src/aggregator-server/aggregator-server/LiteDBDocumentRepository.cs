@@ -31,10 +31,9 @@ namespace aggregator_server
 
             var collection = database.GetCollection<Document>(DocumentCollectionName);
 
-            if (collection.EnsureIndex(document => document.ID))    // TODO: Do I really need to create an index on the ID explicitly? I don't think so...
-                configLog.Info($"Collection {DocumentCollectionName}: ID index created");
+            configLog.Info($"Collection {DocumentCollectionName} contains {collection.Count()} records.");
 
-            if (collection.EnsureIndex(document => document.ID))
+            if (collection.EnsureIndex(document => document.SourceID))
                 configLog.Info($"Collection {DocumentCollectionName}: SourceID index created");
 
             var mapper = BsonMapper.Global;
