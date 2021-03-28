@@ -73,6 +73,7 @@ namespace aggregator_server
                             var timeSinceLastPoll = pollTime.Minus(pollConfiguration.LastPollInformation.PolledTime);
                             if (timeSinceLastPoll >= Duration.FromMinutes(pollConfiguration.PollIntervalMinutes))
                             {
+                                // TODO: reword this log message
                                 log.Info($"Configuration check: Configuration {pollConfiguration.ID} ({pollConfiguration.URL}), last polled at {pollConfiguration.LastPollInformation.PolledTime}, will be polled again.");
                                 doPoll = true;
                             }
@@ -85,6 +86,7 @@ namespace aggregator_server
                             // actually do poll here
                             PollFeed(pollConfiguration.URL);
 
+                            // TODO: handle failure
                             var LastPollInformation = new Models.PollingInformation() { Successful = true, PolledTime = pollTime };
 
                             configurationRepository.SetConfigurationLastPollInformation(pollConfiguration.ID, LastPollInformation);
@@ -100,6 +102,64 @@ namespace aggregator_server
             configLog.Info("Polling loop ended.");
         }
 
+        public static void ParseAtomFeedAndUpdateRepository(IDocumentRepository repository, XmlReader reader)
+        {
+            var feed = SyndicationFeed.Load(reader);
+            log.Info($"Poll response: {feed.Items.Count()} items.");
+
+            foreach (var post in feed.Items)
+            {
+                var sourceID = post.Id;
+
+                var docs = repository.FindBySourceID(sourceID);
+
+                if (docs.Count() == 0)
+                {
+                    var doc = new Document()
+                    {
+                        Content = (post.Content as TextSyndicationContent)?.Text,   // TODO: validation here
+                        PublishTime = Instant.FromDateTimeOffset(post.PublishDate), // TODO: test this...
+                        SourceID = sourceID,
+                        SourceLink = post.Links.FirstOrDefault().Uri.ToString(),   // TODO: validate this, and maybe change the type
+                        Title = WebUtility.HtmlDecode(post.Title.Text), // TODO: do this in one place so that it isn't duplicated with the update...
+                        UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime)
+                    };
+
+                    repository.AddDocument(doc);
+
+                    log.Info("Added new document:");
+                    LogDocument(doc);
+                }
+                else if (docs.Count() == 1)
+                {
+                    // TODO: Race condition...
+                    var matchingDoc = docs.First();
+
+                    var updateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
+
+                    if (matchingDoc.UpdateTime < updateTime)
+                    {
+                        matchingDoc.Content = (post.Content as TextSyndicationContent)?.Text;   // TODO: validation here
+                        matchingDoc.PublishTime = Instant.FromDateTimeOffset(post.PublishDate); // TODO: test this...
+                        matchingDoc.SourceID = sourceID;
+                        matchingDoc.SourceLink = post.Links.FirstOrDefault().Uri.ToString();   // TODO: validate this, and maybe change the type
+                        matchingDoc.Title = WebUtility.HtmlDecode(post.Title.Text);
+                        matchingDoc.UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
+
+                        repository.UpdateDocument(matchingDoc);
+
+                        log.Info($"Updated document {matchingDoc.ID}:");
+                        LogDocument(matchingDoc);
+                    }
+                    else
+                    {
+                        log.Debug($"Document {matchingDoc.ID} ({matchingDoc.SourceID}) present in feed, but not updated.");
+                    }
+                }
+            }
+
+        }
+
         void PollFeed(string feedUri)
         {
             // TODO: figure out automated test strategy for polling logic
@@ -113,69 +173,17 @@ namespace aggregator_server
                 string text = client.DownloadString(feedUri);
                 byte[] bytes = Encoding.UTF8.GetBytes(text);
 
+                log.Info($"Poll response: {bytes.Length} bytes.");
+
                 using (var inputStream = new MemoryStream(bytes))
                 using (var reader = XmlReader.Create(inputStream))
                 {
-                    var feed = SyndicationFeed.Load(reader);
-                    log.Info($"Poll response: {feed.Items.Count()} items, {bytes.Length} bytes");
-
-                    foreach (var post in feed.Items)
-                    {
-                        var sourceID = post.Id;
-
-                        var docs = documentRepository.FindBySourceID(sourceID);
-
-                        if (docs.Count() == 0)
-                        {
-                            var doc = new Document()
-                            {
-                                Content = (post.Content as TextSyndicationContent)?.Text,   // TODO: validation here
-                                PublishTime = Instant.FromDateTimeOffset(post.PublishDate), // TODO: test this...
-                                SourceID = sourceID,
-                                SourceLink = post.Links.FirstOrDefault().Uri.ToString(),   // TODO: validate this, and maybe change the type
-                                Title = WebUtility.HtmlDecode(post.Title.Text), // TODO: do this in one place so that it isn't duplicated with the update...
-                                UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime)
-                            };
-
-                            documentRepository.AddDocument(doc);
-
-                            log.Info("Added new document:");
-                            LogDocument(doc);
-                        }
-                        else if (docs.Count() == 1)
-                        {
-                            // TODO: Race condition...
-                            var matchingDoc = docs.First();
-
-                            var updateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
-
-                            if (matchingDoc.UpdateTime < updateTime)
-                            {
-                                matchingDoc.Content = (post.Content as TextSyndicationContent)?.Text;   // TODO: validation here
-                                matchingDoc.PublishTime = Instant.FromDateTimeOffset(post.PublishDate); // TODO: test this...
-                                matchingDoc.SourceID = sourceID;
-                                matchingDoc.SourceLink = post.Links.FirstOrDefault().Uri.ToString();   // TODO: validate this, and maybe change the type
-                                matchingDoc.Title = WebUtility.HtmlDecode(post.Title.Text);
-                                matchingDoc.UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime);
-
-                                documentRepository.UpdateDocument(matchingDoc);
-
-                                log.Info($"Updated document {matchingDoc.ID}:");
-                                LogDocument(matchingDoc);
-                            }
-                            else
-                            {
-                                log.Debug($"Document {matchingDoc.ID} ({matchingDoc.SourceID}) present in feed, but not updated.");
-                            }
-                        }
-                    }
+                    ParseAtomFeedAndUpdateRepository(documentRepository, reader);
                 }
             }
-
-            Console.WriteLine();
         }
 
-        void LogDocument(Document doc)
+        static void LogDocument(Document doc)
         {
             log.Info($"Title: {doc.Title}");
             log.Info($"Source ID: {doc.SourceID}");
