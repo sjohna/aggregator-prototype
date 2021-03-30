@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestData\atom\singlePost.xml" />
     <None Remove="TestData\atom\singlePostUpdated.xml" />
+    <None Remove="TestData\atom\tenPosts.xml" />
+    <None Remove="TestData\atom\tenPosts_3to12.xml" />
+    <None Remove="TestData\atom\twoPosts.xml" />
+    <None Remove="TestData\atom\twoPosts_oneUpdated.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="TestData/atom/singlePost.xml" />
+    <EmbeddedResource Include="TestData\atom\tenPosts_3to12.xml" />
+    <EmbeddedResource Include="TestData\atom\tenPosts.xml" />
+    <EmbeddedResource Include="TestData\atom\twoPosts_oneUpdated.xml" />
+    <EmbeddedResource Include="TestData\atom\twoPosts.xml" />
+    <EmbeddedResource Include="TestData\atom\singlePost.xml" />
     <EmbeddedResource Include="TestData\atom\singlePostUpdated.xml" />
   </ItemGroup>
 
