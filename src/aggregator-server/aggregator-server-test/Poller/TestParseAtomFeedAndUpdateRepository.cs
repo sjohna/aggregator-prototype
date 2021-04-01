@@ -9,7 +9,7 @@ using System.Xml;
 using System.Linq;
 using NodaTime;
 
-namespace aggregator_server_test.Poller
+namespace aggregator_server_test
 {
     [TestFixture]
     abstract class TestParseAtomFeedAndUpdateRepository
@@ -22,7 +22,7 @@ namespace aggregator_server_test.Poller
         {
             string resourceName = $"aggregator_server_test.TestData.atom.{filename}";
 
-            var assembly = typeof(aggregator_server_test.Poller.TestParseAtomFeedAndUpdateRepository).Assembly;
+            var assembly = typeof(aggregator_server_test.TestParseAtomFeedAndUpdateRepository).Assembly;
 
             Stream resourceStream = assembly.GetManifestResourceStream(resourceName);
 
