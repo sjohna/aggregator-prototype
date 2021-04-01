@@ -12,40 +12,17 @@ using NodaTime;
 namespace aggregator_server_test.Poller
 {
     [TestFixture]
-    class TestPoller
+    abstract class TestParseAtomFeedAndUpdateRepository
     {
         protected IDocumentRepository repository;
-
-        private MemoryStream databaseStream;
-        private LiteDatabase database;
-
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-            LiteDBFunctions.DoLiteDBGlobalSetUp();
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            databaseStream = new MemoryStream();
-            database = new LiteDatabase(databaseStream);
-            repository = new LiteDBDocumentRepository(database);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            if (repository != null) repository.Dispose();
-            if (database != null) database.Dispose();
-            if (databaseStream != null) databaseStream.Dispose();
-        }
+        protected MemoryStream databaseStream;
+        protected LiteDatabase database;
 
         private XmlReader GetAtomResourceXmlReader(string filename)
         {
             string resourceName = $"aggregator_server_test.TestData.atom.{filename}";
 
-            var assembly = typeof(aggregator_server_test.Poller.TestPoller).Assembly;
+            var assembly = typeof(aggregator_server_test.Poller.TestParseAtomFeedAndUpdateRepository).Assembly;
 
             Stream resourceStream = assembly.GetManifestResourceStream(resourceName);
 
