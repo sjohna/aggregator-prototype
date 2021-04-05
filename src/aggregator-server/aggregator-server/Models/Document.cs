@@ -24,7 +24,5 @@ namespace aggregator_server.Models
         public Instant UpdateTime { get; set; }
 
         public string SourceLink { get; set; }
-
-
     }
 }

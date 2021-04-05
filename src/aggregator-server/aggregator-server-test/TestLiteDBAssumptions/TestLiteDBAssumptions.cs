@@ -54,5 +54,34 @@ namespace aggregator_server_test
             Assert.IsNull(collection.FindById(1));
             Assert.IsNull(collection.FindById(3));
         }
+
+        [Test]
+        public void InsertingRespectsNonDefaultID()
+        {
+            var dbStream = new MemoryStream();
+            var db = new LiteDatabase(dbStream);
+
+            var collection = db.GetCollection<TestThing>("TestThings");
+
+            collection.Insert(new TestThing { ID = 7, Name = "Thing 1" });
+            Assert.AreEqual("Thing 1", collection.FindById(7).Name);
+            Assert.IsNull(collection.FindById(0));
+            Assert.IsNull(collection.FindById(1));
+        }
+
+        [Test]
+        public void CannotInsertDuplicateID()
+        {
+            var dbStream = new MemoryStream();
+            var db = new LiteDatabase(dbStream);
+
+            var collection = db.GetCollection<TestThing>("TestThings");
+
+            collection.Insert(new TestThing { ID = 7, Name = "Thing 1" });
+            Assert.Throws<LiteException>(() => collection.Insert(new TestThing { ID = 7, Name = "Thing 1" }));
+            Assert.AreEqual("Thing 1", collection.FindById(7).Name);
+            Assert.IsNull(collection.FindById(0));
+            Assert.IsNull(collection.FindById(1));
+        }
     }
 }
