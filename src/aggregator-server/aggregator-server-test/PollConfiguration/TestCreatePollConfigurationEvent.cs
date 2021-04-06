@@ -12,7 +12,7 @@ namespace aggregator_server_test
         [Test]
         public void EventType()
         {
-            var e = new CreatePollConfigurationEvent(1,2,"",false);
+            var e = new CreatePollConfigurationEvent(Guid.NewGuid(),2,"",false);
 
             Assert.AreEqual(EntityEvent.EntityType.PollConfiguration, e.AffectedEntityType);
         }
@@ -20,11 +20,12 @@ namespace aggregator_server_test
         [Test]
         public void CreateEntity()
         {
-            var e = new CreatePollConfigurationEvent(1, 10, "testURL", true);
+            var id = Guid.NewGuid();
+            var e = new CreatePollConfigurationEvent(id, 10, "testURL", true);
 
             var pollConfiguration = e.CreateEntity();
 
-            Assert.AreEqual(1, pollConfiguration.ID);
+            Assert.AreEqual(id, pollConfiguration.ID);
             Assert.AreEqual(10, pollConfiguration.PollIntervalMinutes);
             Assert.AreEqual("testURL", pollConfiguration.URL);
             Assert.AreEqual(true, pollConfiguration.Active);

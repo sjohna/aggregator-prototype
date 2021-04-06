@@ -12,7 +12,7 @@ namespace aggregator_server.Models
 
         public override PollConfiguration CreateEntity()
         {
-            var ID = (int) CreationParameters[nameof(PollConfiguration.ID)];
+            var ID = (Guid) CreationParameters[nameof(PollConfiguration.ID)];
             var PollIntervalMinutes = (int)CreationParameters[nameof(PollConfiguration.PollIntervalMinutes)];
             var URL = CreationParameters[nameof(PollConfiguration.URL)] as String;
             var Active = (bool)CreationParameters[nameof(PollConfiguration.Active)];
@@ -20,7 +20,7 @@ namespace aggregator_server.Models
             return new PollConfiguration(ID, PollIntervalMinutes, URL, Active);
         }
 
-        public CreatePollConfigurationEvent(int id, int pollIntervalMinutes, string url, bool active) : base(id, EntityType.PollConfiguration)
+        public CreatePollConfigurationEvent(Guid id, int pollIntervalMinutes, string url, bool active) : base(id, EntityType.PollConfiguration)
         {
             ImmutableDictionary<String, Object>.Builder CreationParametersBuilder = ImmutableDictionary.CreateBuilder<String, Object>();
 

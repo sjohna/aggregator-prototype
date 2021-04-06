@@ -9,7 +9,7 @@ namespace aggregator_server.Models
 {
     public class Document
     {
-        public int ID { get; private set; }     // the ID within this database
+        public Guid ID { get; private set; }     // the ID within this database
 
         public string SourceID { get; set; }    // the ID of the item from the source
 

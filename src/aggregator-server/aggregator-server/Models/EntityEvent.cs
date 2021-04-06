@@ -17,13 +17,13 @@ namespace aggregator_server.Models
         }
 
         [BsonId]
-        public int ID;
+        public Guid ID;
 
-        public int AffectedEntityID { get; }
+        public Guid AffectedEntityID { get; }
 
         public EntityType AffectedEntityType { get; }
 
-        protected EntityEvent(int AffectedEntityID, EntityType AffectedEntityType)
+        protected EntityEvent(Guid AffectedEntityID, EntityType AffectedEntityType)
         {
             this.AffectedEntityID = AffectedEntityID;
             this.AffectedEntityType = AffectedEntityType;

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Net;
 using System.IO;
 using LiteDB;
+using System;
 
 namespace aggregator_server_test
 {
@@ -201,7 +202,7 @@ namespace aggregator_server_test
         [Test]
         public void GetByIDWithEmptyRepository()
         {
-            var result = Controller.Get(1) as IStatusCodeActionResult;
+            var result = Controller.Get(Guid.NewGuid()) as IStatusCodeActionResult;
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -240,7 +241,7 @@ namespace aggregator_server_test
         [Test]
         public void DeleteWithEmptyRepository()
         {
-            var deleteResult = Controller.Delete(12) as IStatusCodeActionResult;
+            var deleteResult = Controller.Delete(Guid.NewGuid()) as IStatusCodeActionResult;
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, deleteResult.StatusCode);
         }
@@ -250,7 +251,7 @@ namespace aggregator_server_test
         {
             var configuration = repository.AddConfiguration("test", 1, false);
 
-            var deleteResult = Controller.Delete(configuration.ID + 1) as IStatusCodeActionResult;
+            var deleteResult = Controller.Delete(Guid.NewGuid()) as IStatusCodeActionResult;
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, deleteResult.StatusCode);
 
@@ -333,7 +334,7 @@ namespace aggregator_server_test
                 Active = true
             };
 
-            var updateResult = Controller.Put(configuration.ID + 1, updateConfigurationInput) as ObjectResult;
+            var updateResult = Controller.Put(Guid.NewGuid() , updateConfigurationInput) as ObjectResult;
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, updateResult.StatusCode);
         }

@@ -75,7 +75,7 @@ namespace aggregator_server
             return database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).FindAll();    // TODO: do I need to copy this to its own list?
         }
 
-        public PollConfiguration SetConfigurationLastPollInformation(int configurationID, PollingInformation info)
+        public PollConfiguration SetConfigurationLastPollInformation(Guid configurationID, PollingInformation info)
         {
             lock(database)
             {
@@ -97,7 +97,7 @@ namespace aggregator_server
             }
         }
 
-        public PollConfiguration GetConfiguration(int id)
+        public PollConfiguration GetConfiguration(Guid id)
         {
             var configuration = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).FindById(id);
 
@@ -107,7 +107,7 @@ namespace aggregator_server
             return configuration;
         }
 
-        public void DeleteConfiguration(int id)
+        public void DeleteConfiguration(Guid id)
         {
             if(!database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Delete(id))
             {

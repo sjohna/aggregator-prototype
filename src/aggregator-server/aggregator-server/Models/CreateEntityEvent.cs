@@ -11,7 +11,7 @@ namespace aggregator_server.Models
         // TODO: investigate JSON serialization for this...
         public abstract ImmutableDictionary<String, Object> CreationParameters { get; }
 
-        protected CreateEntityEvent(int AffectedEntityID, EntityType AffectedEntityType) : base(AffectedEntityID, AffectedEntityType)
+        protected CreateEntityEvent(Guid AffectedEntityID, EntityType AffectedEntityType) : base(AffectedEntityID, AffectedEntityType)
         {
 
         }

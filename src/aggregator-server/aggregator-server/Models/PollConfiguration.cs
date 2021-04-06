@@ -7,16 +7,17 @@ namespace aggregator_server.Models
 {
     public class PollConfiguration
     {
+        public Guid ID { get; private set; }
+
         public string URL { get; set; }
         public int PollIntervalMinutes { get; set; }
-        public int ID { get; private set; }
         public bool Active { get; set; }
 
         public PollingInformation LastPollInformation { get; set; }
 
         public PollConfiguration() { }
 
-        public PollConfiguration(int id, int pollIntervalMinutes, string url, bool active)
+        public PollConfiguration(Guid id, int pollIntervalMinutes, string url, bool active)
         {
             this.ID = id;
             this.PollIntervalMinutes = pollIntervalMinutes;

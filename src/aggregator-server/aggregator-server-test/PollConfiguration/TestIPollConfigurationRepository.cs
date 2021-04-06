@@ -73,7 +73,7 @@ namespace aggregator_server_test
         [Test]
         public void GetConfigurationInEmptyRepository()
         {
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(Guid.NewGuid()));
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace aggregator_server_test
         {
             var addedConfiguration = repository.AddConfiguration("test1", 7, true);
 
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(addedConfiguration.ID + 1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetConfiguration(Guid.NewGuid()));  // TODO: better way to test this...
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace aggregator_server_test
             Assert.AreEqual(polledTime, updatedConfiguration.LastPollInformation.PolledTime);
             Assert.AreEqual(successful, updatedConfiguration.LastPollInformation.Successful);
 
-            var gottenConfiguration = repository.GetConfiguration(configuration.ID);    // test that updated LAstPollConfiguration is present when getting the updated configuration
+            var gottenConfiguration = repository.GetConfiguration(configuration.ID);    // test that updated LastPollConfiguration is present when getting the updated configuration
 
             Assert.AreEqual(configuration.ID, gottenConfiguration.ID);
             Assert.AreEqual(configuration.URL, gottenConfiguration.URL);
@@ -128,7 +128,7 @@ namespace aggregator_server_test
                 Successful = successful
             };
 
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.SetConfigurationLastPollInformation(configuration.ID + 1, pollInfo));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.SetConfigurationLastPollInformation(Guid.NewGuid(), pollInfo));
         }
 
         [Test]
@@ -164,7 +164,7 @@ namespace aggregator_server_test
         [Test]
         public void DeleteInEmptyRepository()
         {
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.DeleteConfiguration(1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.DeleteConfiguration(Guid.NewGuid()));
         }
 
         [Test]
@@ -172,7 +172,7 @@ namespace aggregator_server_test
         {
             var configuration = repository.AddConfiguration("test", 7, true);
 
-            Assert.Throws<RepositoryItemNotFoundException>(() => repository.DeleteConfiguration(configuration.ID - 1));
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.DeleteConfiguration(Guid.NewGuid()));
 
             Assert.AreEqual(1, repository.GetConfigurations().Count());
 

@@ -33,13 +33,13 @@ namespace aggregator_server_test
                 UpdateTime = Instant.FromUnixTimeSeconds(2000)
             };
 
-            Assert.AreEqual(0, doc.ID);
+            Assert.AreEqual(new Guid(), doc.ID);
 
             repository.AddDocument(doc);
 
             Assert.AreEqual(1, repository.GetDocuments().Count());
 
-            Assert.AreNotEqual(0, doc.ID);
+            Assert.AreNotEqual(new Guid(), doc.ID);
 
             var docInRepository = repository.GetDocuments().First();
 

@@ -35,7 +35,7 @@ namespace aggregator_server.Controllers
 
         // GET api/<PollConfigurationController>/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Get(Guid id)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace aggregator_server.Controllers
 
         // PUT api/<PollConfigurationController>/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] PollConfigurationTransferObject updatedConfiguration)
+        public IActionResult Put(Guid id, [FromBody] PollConfigurationTransferObject updatedConfiguration)
         {
             // TODO: all validation inside of repository?
             if (updatedConfiguration.PollIntervalMinutes != null && updatedConfiguration.PollIntervalMinutes <= 0)
@@ -114,7 +114,7 @@ namespace aggregator_server.Controllers
 
         //DELETE api/<PollConfigurationController>/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid id)
         {
             try
             {

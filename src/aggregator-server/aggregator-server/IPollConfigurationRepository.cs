@@ -13,11 +13,11 @@ namespace aggregator_server
         // returns the added configuration object
         PollConfiguration AddConfiguration(string URL, int pollIntervalMinutes, bool active);
 
-        PollConfiguration SetConfigurationLastPollInformation(int configurationID, PollingInformation info);
+        PollConfiguration SetConfigurationLastPollInformation(Guid configurationID, PollingInformation info);
 
-        PollConfiguration GetConfiguration(int id);
+        PollConfiguration GetConfiguration(Guid id);
 
-        void DeleteConfiguration(int id);
+        void DeleteConfiguration(Guid id);
 
         void UpdateConfiguration(PollConfiguration configuration);
     }
