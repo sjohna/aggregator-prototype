@@ -8,7 +8,7 @@ using System.Text;
 namespace aggregator_server_test
 {
     [TestFixture]
-    class TestLiteDBAssumptions
+    class TestLiteDBIntID
     {
         class TestThing
         {
