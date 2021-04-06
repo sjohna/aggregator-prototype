@@ -49,7 +49,7 @@ namespace aggregator_server
 
         public IEnumerable<Document> GetDocuments()
         {
-            return database.GetCollection<Document>(DocumentCollectionName).FindAll();    // TODO: do I need to copy this to its own list?
+            return database.GetCollection<Document>(DocumentCollectionName).FindAll();
         }
 
         public void UpdateDocument(Document doc)
@@ -59,7 +59,7 @@ namespace aggregator_server
 
         public IEnumerable<Document> FindBySourceID(string sourceID)
         {
-            return database.GetCollection<Document>(DocumentCollectionName).Find(doc => doc.SourceID == sourceID);  // TODO: do I need to copy this to its own list?
+            return database.GetCollection<Document>(DocumentCollectionName).Find(doc => doc.SourceID == sourceID);
         }
 
         public void Dispose()

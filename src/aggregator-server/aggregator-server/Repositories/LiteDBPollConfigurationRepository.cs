@@ -72,7 +72,7 @@ namespace aggregator_server
 
         public IEnumerable<PollConfiguration> GetConfigurations()
         {
-            return database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).FindAll();    // TODO: do I need to copy this to its own list?
+            return database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).FindAll();
         }
 
         public PollConfiguration SetConfigurationLastPollInformation(Guid configurationID, PollingInformation info)
