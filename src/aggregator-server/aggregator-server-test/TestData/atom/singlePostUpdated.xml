@@ -2,8 +2,7 @@
 	xmlns="http://www.w3.org/2005/Atom"
 	xmlns:thr="http://purl.org/syndication/thread/1.0"
 	xml:lang="en"
-	xml:base="https://example.com/testblog/wp-atom.php"
-	xmlns:georss="http://www.georss.org/georss" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" >
+	xml:base="https://example.com/testblog/wp-atom.php" >
 	<title type="text">Test Blog</title>
 	<subtitle type="text">This is the subtitle for the test blog.</subtitle>
 

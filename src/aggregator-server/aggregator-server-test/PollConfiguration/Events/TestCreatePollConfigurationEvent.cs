@@ -10,7 +10,7 @@ namespace aggregator_server_test
     class TestCreatePollConfigurationEvent
     {
         [Test]
-        public void EventType()
+        public void AffectedEntityType()
         {
             var e = new CreatePollConfigurationEvent(Guid.NewGuid(),2,"",false);
 

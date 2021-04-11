@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,13 +9,17 @@ namespace aggregator_server.Models
 {
     public abstract class CreateEntityEvent<T> : EntityEvent
     {
-        // TODO: investigate JSON serialization for this...
-        public abstract ImmutableDictionary<String, Object> CreationParameters { get; }
+        protected Dictionary<String, Object> PrivateCreationParameters { get; set; }
+
+        [BsonIgnore]
+        public IReadOnlyDictionary<String, Object> CreationParameters => PrivateCreationParameters;
 
         protected CreateEntityEvent(Guid AffectedEntityID, EntityType AffectedEntityType) : base(AffectedEntityID, AffectedEntityType)
         {
 
         }
+
+        protected CreateEntityEvent() { }
 
         public abstract T CreateEntity();
 

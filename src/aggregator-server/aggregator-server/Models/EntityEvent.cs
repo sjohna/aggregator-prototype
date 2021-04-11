@@ -25,8 +25,11 @@ namespace aggregator_server.Models
 
         protected EntityEvent(Guid AffectedEntityID, EntityType AffectedEntityType)
         {
+            this.ID = Guid.NewGuid();
             this.AffectedEntityID = AffectedEntityID;
             this.AffectedEntityType = AffectedEntityType;
         }
+
+        protected EntityEvent() { }
     }
 }
