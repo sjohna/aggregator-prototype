@@ -17,11 +17,11 @@ namespace aggregator_server.Models
         }
 
         [BsonId]
-        public Guid ID;
+        public Guid ID { get; protected set; }
 
-        public Guid AffectedEntityID { get; }
+        public Guid AffectedEntityID { get; protected set; }
 
-        public EntityType AffectedEntityType { get; }
+        public EntityType AffectedEntityType { get; protected set; }
 
         protected EntityEvent(Guid AffectedEntityID, EntityType AffectedEntityType)
         {

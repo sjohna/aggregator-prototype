@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace aggregator_server_test
+namespace aggregator_server_test.LiteDB
 {
     [TestFixture]
     class TestLiteDBIntID

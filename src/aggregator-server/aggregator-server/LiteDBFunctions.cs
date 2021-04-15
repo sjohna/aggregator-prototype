@@ -12,6 +12,8 @@ namespace aggregator_server
     {
         public static void DoLiteDBGlobalSetUp()
         {
+            BsonMapper.Global.IncludeNonPublic = true;
+
             BsonMapper.Global.RegisterType<Instant>
             (
                 serialize: (instant) => NodaTime.Text.InstantPattern.ExtendedIso.Format(instant),

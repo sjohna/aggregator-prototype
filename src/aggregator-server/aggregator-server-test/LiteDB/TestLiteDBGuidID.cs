@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 
-namespace aggregator_server_test
+namespace aggregator_server_test.LiteDB
 {
     class TestLiteDBGuidID
     {
