@@ -18,13 +18,24 @@ namespace aggregator_server_test.LiteDB
             public string Name { get; set; }
         }
 
+        private LiteDatabase database;
+
+        [SetUp]
+        public void SetUp()
+        {
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
+        }
+
         [Test]
         public void FindAllDoesNotBreakIfItemAddedWhileEnumerating()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             collection.Insert(new TestThing { ID = 1, Name = "Thing 1" });
             collection.Insert(new TestThing { ID = 2, Name = "Thing 2" });

@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace aggregator_server_test.LiteDB
 {
+    [TestFixture]
     class TestLiteDBGuidID
     {
-        [TestFixture]
         class TestThingWithGuid
         {
             [BsonId]
@@ -19,14 +19,25 @@ namespace aggregator_server_test.LiteDB
             public string Name { get; set; }
         }
 
+        private LiteDatabase database;
+
+        [SetUp]
+        public void SetUp()
+        {
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
+        }
+
         // If the BsonId is a Guid, LiteDB will populate it if a default value is inserted. I will need to check that the ID field is populated before I insert in certain collections.
         [Test]
         public void AddedRecordWithDefaultGuidHasGuidSet()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThingWithGuid>("TestThingsWithGuids");
+            var collection = database.GetCollection<TestThingWithGuid>("TestThingsWithGuids");
 
             collection.Insert(new TestThingWithGuid { Name = "Thing 1", ID = new Guid() }); // default GUID value
 
@@ -40,10 +51,7 @@ namespace aggregator_server_test.LiteDB
         [Test]
         public void InsertingRespectsNonDefaultID()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThingWithGuid>("TestThingsWithGuids");
+            var collection = database.GetCollection<TestThingWithGuid>("TestThingsWithGuids");
 
             var thingID = Guid.NewGuid();
             Assert.AreNotEqual(new Guid(), thingID);
@@ -60,10 +68,7 @@ namespace aggregator_server_test.LiteDB
         [Test]
         public void CannotInsertDuplicateID()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThingWithGuid>("TestThingsWithGuids");
+            var collection = database.GetCollection<TestThingWithGuid>("TestThingsWithGuids");
 
             collection.Insert(new TestThingWithGuid { Name = "Thing 1", ID = new Guid() }); // default GUID value
 

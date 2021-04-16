@@ -11,7 +11,6 @@ namespace aggregator_server_test
     [TestFixture]
     class TestLiteDBDocumentRepository : TestDocumentRepository
     {
-        private MemoryStream databaseStream;
         private LiteDatabase database;
 
         [OneTimeSetUp]
@@ -23,17 +22,15 @@ namespace aggregator_server_test
         [SetUp]
         public void SetUp()
         {
-            databaseStream = new MemoryStream();
-            database = new LiteDatabase(databaseStream);
+            database = new LiteDatabase(":memory:");
             repository = new LiteDBDocumentRepository(database);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (repository != null) repository.Dispose();
-            if (database != null) database.Dispose();
-            if (databaseStream != null) databaseStream.Dispose();
+            repository?.Dispose();
+            database?.Dispose();
         }
     }
 }

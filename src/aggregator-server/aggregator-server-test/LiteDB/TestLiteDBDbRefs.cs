@@ -29,45 +29,49 @@ namespace aggregator_server_test.LiteDB
             public string Name { get; set; }
         }
 
-        [Test]
-        public void StoreAndRetrieveThing1WithNoOtherThings()
+        private LiteDatabase database;
+
+        [SetUp]
+        public void SetUp()
         {
             BsonMapper.Global.Entity<Thing1>()
                 .DbRef(x => x.OtherThings, "ThingTwos");
 
-            using (var db = new LiteDatabase(":memory:"))
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
+        }
+
+        [Test]
+        public void StoreAndRetrieveThing1WithNoOtherThings()
+        {
+            var thing1Collection = database.GetCollection<Thing1>("ThingOnes");
+            var thing2Collection = database.GetCollection<Thing2>("ThingTwos");
+
+            var thing1 = new Thing1()
             {
+                ID = Guid.NewGuid(),
+                OtherThings = new List<Thing2>(),
+                SomeValue = 7
+            };
 
-                var thing1Collection = db.GetCollection<Thing1>("ThingOnes");
-                var thing2Collection = db.GetCollection<Thing2>("ThingTwos");
+            thing1Collection.Insert(thing1);
 
-                var thing1 = new Thing1()
-                {
-                    ID = Guid.NewGuid(),
-                    OtherThings = new List<Thing2>(),
-                    SomeValue = 7
-                };
+            var thing1InCollection = thing1Collection.FindAll().First();
 
-                thing1Collection.Insert(thing1);
-
-                var thing1InCollection = thing1Collection.FindAll().First();
-
-                Assert.AreEqual(7, thing1InCollection.SomeValue);
-                Assert.AreEqual(0, thing1InCollection.OtherThings.Count);
-            }
+            Assert.AreEqual(7, thing1InCollection.SomeValue);
+            Assert.AreEqual(0, thing1InCollection.OtherThings.Count);
         }
 
         [Test]
         public void StoreAndRetrieveThing1WithOneOtherThings()
         {
-            BsonMapper.Global.Entity<Thing1>()
-                .DbRef(x => x.OtherThings, "ThingTwos");
-
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var thing1Collection = db.GetCollection<Thing1>("ThingOnes");
-            var thing2Collection = db.GetCollection<Thing2>("ThingTwos");
+            var thing1Collection = database.GetCollection<Thing1>("ThingOnes");
+            var thing2Collection = database.GetCollection<Thing2>("ThingTwos");
 
             var thing1 = new Thing1()
             {

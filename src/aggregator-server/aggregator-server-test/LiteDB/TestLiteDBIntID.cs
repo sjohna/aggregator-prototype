@@ -18,14 +18,25 @@ namespace aggregator_server_test.LiteDB
             public string Name { get; set; }
         }
 
+        private LiteDatabase database;
+
+        [SetUp]
+        public void SetUp()
+        {
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
+        }
+
         // I don't think I rely on this assumption anywhere in my production code, but I do rely on it for other tests in this TestFixture
         [Test]
         public void FirstAddedRecordHasID1()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             collection.Insert(new TestThing { Name = "Thing 1" });
 
@@ -39,10 +50,7 @@ namespace aggregator_server_test.LiteDB
         [Test]
         public void CollectionDoesNotReUseDeletedRecordID()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             collection.Insert(new TestThing { Name = "Thing 1" });
 
@@ -58,10 +66,7 @@ namespace aggregator_server_test.LiteDB
         [Test]
         public void InsertingRespectsNonDefaultID()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             collection.Insert(new TestThing { ID = 7, Name = "Thing 1" });
             Assert.AreEqual("Thing 1", collection.FindById(7).Name);
@@ -72,10 +77,7 @@ namespace aggregator_server_test.LiteDB
         [Test]
         public void CannotInsertDuplicateID()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             collection.Insert(new TestThing { ID = 7, Name = "Thing 1" });
             Assert.Throws<LiteException>(() => collection.Insert(new TestThing { ID = 7, Name = "Thing 1" }));

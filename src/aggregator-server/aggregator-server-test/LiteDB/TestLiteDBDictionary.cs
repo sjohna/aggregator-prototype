@@ -34,13 +34,24 @@ namespace aggregator_server_test.LiteDB
             BsonMapper.Global.IncludeNonPublic = true;
         }
 
+        private LiteDatabase database;
+
+        [SetUp]
+        public void SetUp()
+        {
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
+        }
+
         [Test]
         public void SerializeAndDeserializeNullDictionary()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             collection.Insert(new TestThing(new Guid(), null)); // default GUID value
 
@@ -54,10 +65,7 @@ namespace aggregator_server_test.LiteDB
         [Test]
         public void SerializeAndDeserializeNonemptyDictionary()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var collection = db.GetCollection<TestThing>("TestThings");
+            var collection = database.GetCollection<TestThing>("TestThings");
 
             var dictionary = new Dictionary<string, object>();
             dictionary.Add("one", 1);

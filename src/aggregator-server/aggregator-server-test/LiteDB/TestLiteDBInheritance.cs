@@ -56,90 +56,95 @@ namespace aggregator_server_test.LiteDB
             public List<BaseClass> BaseClasses { get; set; }
         }
 
+        private LiteDatabase database;
+
+        [SetUp]
+        public void SetUp()
+        {
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
+        }
+
         [Test]
         public void StoreAndRetrieveOneLeafInstanceFromLeafCollection()
         {
-            using (var db = new LiteDatabase(":memory:"))
+            var leafCollection = database.GetCollection<LeafA1>("LeafA1s");
+
+            var leaf = new LeafA1()
             {
-                var leafCollection = db.GetCollection<LeafA1>("LeafA1s");
+                ID = Guid.NewGuid(),
+                BaseNumber = 7,
+                IntermediateAThing = "Thing",
+                ValueOne = 12
+            };
 
-                var leaf = new LeafA1()
-                {
-                    ID = Guid.NewGuid(),
-                    BaseNumber = 7,
-                    IntermediateAThing = "Thing",
-                    ValueOne = 12
-                };
+            leafCollection.Insert(leaf);
 
-                leafCollection.Insert(leaf);
+            var leafInCollection = leafCollection.FindAll().First();
 
-                var leafInCollection = leafCollection.FindAll().First();
-
-                Assert.AreEqual(7, leafInCollection.BaseNumber);
-                Assert.AreEqual("Thing", leafInCollection.IntermediateAThing);
-                Assert.AreEqual(12, leafInCollection.ValueOne);
-            }
+            Assert.AreEqual(7, leafInCollection.BaseNumber);
+            Assert.AreEqual("Thing", leafInCollection.IntermediateAThing);
+            Assert.AreEqual(12, leafInCollection.ValueOne);
         }
 
         [Test]
         public void StoreAndRetrieveOneLeafInstanceFromBaseClassCollection()
         {
-            using (var db = new LiteDatabase(":memory:"))
+            var baseCollection = database.GetCollection<BaseClass>("BaseClasses");
+
+            var leaf = new LeafA1()
             {
-                var baseCollection = db.GetCollection<BaseClass>("BaseClasses");
+                ID = Guid.NewGuid(),
+                BaseNumber = 7,
+                IntermediateAThing = "Thing",
+                ValueOne = 12
+            };
 
-                var leaf = new LeafA1()
-                {
-                    ID = Guid.NewGuid(),
-                    BaseNumber = 7,
-                    IntermediateAThing = "Thing",
-                    ValueOne = 12
-                };
+            baseCollection.Insert(leaf);
 
-                baseCollection.Insert(leaf);
+            var baseInCollection = baseCollection.FindAll().First();
 
-                var baseInCollection = baseCollection.FindAll().First();
+            Assert.IsTrue(baseInCollection is LeafA1);
 
-                Assert.IsTrue(baseInCollection is LeafA1);
+            var leafInCollection = baseInCollection as LeafA1;
 
-                var leafInCollection = baseInCollection as LeafA1;
-
-                Assert.AreEqual(7, leafInCollection.BaseNumber);
-                Assert.AreEqual("Thing", leafInCollection.IntermediateAThing);
-                Assert.AreEqual(12, leafInCollection.ValueOne);
-            }
+            Assert.AreEqual(7, leafInCollection.BaseNumber);
+            Assert.AreEqual("Thing", leafInCollection.IntermediateAThing);
+            Assert.AreEqual(12, leafInCollection.ValueOne);
         }
 
         [Test]
         public void DbRefToListOfBaseClass()
         {
-            using (var db = new LiteDatabase(":memory:"))
+            BsonMapper.Global.Entity<OtherThing>()
+                .DbRef(x => x.BaseClasses, "BaseClasses");
+
+            var baseCollection = database.GetCollection<BaseClass>("BaseClasses");
+            var otherThingCollection = database.GetCollection<OtherThing>("OtherThings");
+
+            var leaf = new LeafA1()
             {
-                BsonMapper.Global.Entity<OtherThing>()
-                    .DbRef(x => x.BaseClasses, "BaseClasses");
+                ID = Guid.NewGuid(),
+                BaseNumber = 7,
+                IntermediateAThing = "Thing",
+                ValueOne = 12
+            };
 
-                var baseCollection = db.GetCollection<BaseClass>("BaseClasses");
-                var otherThingCollection = db.GetCollection<OtherThing>("OtherThings");
+            var otherThing = new OtherThing()
+            {
+                ID = Guid.NewGuid(),
+                BaseClasses = new List<BaseClass>()
+            };
 
-                var leaf = new LeafA1()
-                {
-                    ID = Guid.NewGuid(),
-                    BaseNumber = 7,
-                    IntermediateAThing = "Thing",
-                    ValueOne = 12
-                };
+            otherThing.BaseClasses.Add(leaf);
 
-                var otherThing = new OtherThing()
-                {
-                    ID = Guid.NewGuid(),
-                    BaseClasses = new List<BaseClass>()
-                };
-
-                otherThing.BaseClasses.Add(leaf);
-
-                baseCollection.Insert(leaf);
-                otherThingCollection.Insert(otherThing);
-            }
+            baseCollection.Insert(leaf);
+            otherThingCollection.Insert(otherThing);
         }
     }
 }

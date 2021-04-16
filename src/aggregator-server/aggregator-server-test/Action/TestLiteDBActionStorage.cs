@@ -14,6 +14,8 @@ namespace aggregator_server_test
     [TestFixture]
     public class TestLiteDBActionStorage
     {
+        private LiteDatabase database;
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -21,6 +23,18 @@ namespace aggregator_server_test
 
             BsonMapper.Global.Entity<AggregatorAction>()
                 .DbRef(x => x.Events, "Events");
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            database = new LiteDatabase(":memory:");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            database?.Dispose();
         }
 
         public class TestEventTypeOne : EntityEvent
@@ -42,10 +56,7 @@ namespace aggregator_server_test
         [Test]
         public void ActionWithNoEvents()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var actionCollection = db.GetCollection<AggregatorAction>("Actions");
+            var actionCollection = database.GetCollection<AggregatorAction>("Actions");
 
             var actionID = Guid.NewGuid();
 
@@ -66,11 +77,8 @@ namespace aggregator_server_test
         [Test]
         public void ActionWithOneEvent()
         {
-            var dbStream = new MemoryStream();
-            var db = new LiteDatabase(dbStream);
-
-            var actionCollection = db.GetCollection<AggregatorAction>("Actions");
-            var eventCollection = db.GetCollection<EntityEvent>("Events");
+            var actionCollection = database.GetCollection<AggregatorAction>("Actions");
+            var eventCollection = database.GetCollection<EntityEvent>("Events");
 
             var actionID = Guid.NewGuid();
 
