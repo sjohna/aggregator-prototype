@@ -20,9 +20,6 @@ namespace aggregator_server_test
         public void OneTimeSetUp()
         {
             LiteDBFunctions.DoLiteDBGlobalSetUp();
-
-            BsonMapper.Global.Entity<AggregatorAction>()
-                .DbRef(x => x.Events, "Events");
         }
 
         [SetUp]

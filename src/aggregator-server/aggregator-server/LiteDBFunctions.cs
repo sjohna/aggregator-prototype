@@ -1,4 +1,5 @@
-﻿using LiteDB;
+﻿using aggregator_server.Models;
+using LiteDB;
 using NodaTime;
 using System;
 using System.Collections.Generic;
@@ -17,8 +18,11 @@ namespace aggregator_server
             BsonMapper.Global.RegisterType<Instant>
             (
                 serialize: (instant) => NodaTime.Text.InstantPattern.ExtendedIso.Format(instant),
-                deserialize: (bson) => NodaTime.Text.InstantPattern.ExtendedIso.Parse(bson.AsString).Value  // dangerous: what if this fails?
+                deserialize: (bson) => NodaTime.Text.InstantPattern.ExtendedIso.Parse(bson.AsString).Value
             );
+
+            BsonMapper.Global.Entity<AggregatorAction>()
+                .DbRef(x => x.Events, "Events");
         }
     }
 }
