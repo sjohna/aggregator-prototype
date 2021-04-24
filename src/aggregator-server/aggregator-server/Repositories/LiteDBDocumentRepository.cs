@@ -1,4 +1,5 @@
-﻿using aggregator_server.Models;
+﻿using aggregator_server.Exceptions;
+using aggregator_server.Models;
 using LiteDB;
 using log4net;
 using System;
@@ -40,11 +41,9 @@ namespace aggregator_server
             mapper.Entity<PollConfiguration>().Id(x => x.ID);
         }
 
-        public Document AddDocument(Document doc)
+        public void InsertDocument(Document doc)
         {
             database.GetCollection<Document>(DocumentCollectionName).Insert(doc);
-
-            return doc;
         }
 
         public IEnumerable<Document> GetDocuments()
@@ -65,6 +64,19 @@ namespace aggregator_server
         public void Dispose()
         {
             
+        }
+
+        public Document GetDocument(Guid id)
+        {
+            var document = database.GetCollection<Document>(DocumentCollectionName).FindById(id);
+
+            if (document == null)
+            {
+                log.Info($"GetDocument: Document ID {id} not present in {DocumentCollectionName} collection.");
+                throw new RepositoryItemNotFoundException($"Document ID {id} not present.");
+            }
+
+            return document;
         }
     }
 }

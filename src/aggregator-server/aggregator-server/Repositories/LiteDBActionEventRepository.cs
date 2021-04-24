@@ -96,7 +96,7 @@ namespace aggregator_server.Repositories
             return EventCollection.FindAll();
         }
 
-        public IEnumerable<EntityEvent> GetEventsByAffectedEntityId(Guid affectedEntityId)
+        public IEnumerable<EntityEvent> FindEventsByAffectedEntityId(Guid affectedEntityId)
         {
             return EventCollection.Query().Where(e => e.AffectedEntityID == affectedEntityId).ToEnumerable();
         }

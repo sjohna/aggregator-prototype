@@ -125,7 +125,7 @@ namespace aggregator_server
                         UpdateTime = Instant.FromDateTimeOffset(post.LastUpdatedTime)
                     };
 
-                    repository.AddDocument(doc);
+                    repository.InsertDocument(doc);
 
                     log.Info("Added new document:");
                     LogDocument(doc);

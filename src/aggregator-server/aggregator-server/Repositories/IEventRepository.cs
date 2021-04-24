@@ -12,6 +12,6 @@ namespace aggregator_server.Repositories
 
         EntityEvent GetEvent(Guid id);
 
-        IEnumerable<EntityEvent> GetEventsByAffectedEntityId(Guid affectedEntityId);
+        IEnumerable<EntityEvent> FindEventsByAffectedEntityId(Guid affectedEntityId);
     }
 }

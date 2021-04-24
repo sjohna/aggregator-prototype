@@ -236,7 +236,7 @@ namespace aggregator_server_test
 
             repository.InsertAction(action);
 
-            var eventInRepository = repository.GetEventsByAffectedEntityId(entityEvent.AffectedEntityID).First() as CreatePollConfigurationEvent;
+            var eventInRepository = repository.FindEventsByAffectedEntityId(entityEvent.AffectedEntityID).First() as CreatePollConfigurationEvent;
 
             Assert.AreEqual(entityEvent.ID, eventInRepository.ID);
             Assert.AreEqual(entityEvent.AffectedEntityID, eventInRepository.AffectedEntityID);
@@ -252,7 +252,7 @@ namespace aggregator_server_test
         [Test]
         public void GetEventByAffectedEntityIdInEmptyRepository()
         {
-            var eventsInRepository = repository.GetEventsByAffectedEntityId(Guid.NewGuid());
+            var eventsInRepository = repository.FindEventsByAffectedEntityId(Guid.NewGuid());
 
             Assert.AreEqual(0, eventsInRepository.Count());
         }

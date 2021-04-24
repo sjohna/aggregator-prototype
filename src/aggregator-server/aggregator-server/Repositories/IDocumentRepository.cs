@@ -10,8 +10,11 @@ namespace aggregator_server
     {
         IEnumerable<Document> GetDocuments();
 
-        Document AddDocument(Document doc); // returns the document as added in the repository
+        Document GetDocument(Guid id);
 
+        void InsertDocument(Document doc); 
+
+        // TODO: refactor how this is handled...
         void UpdateDocument(Document doc);
 
         IEnumerable<Document> FindBySourceID(string sourceID);

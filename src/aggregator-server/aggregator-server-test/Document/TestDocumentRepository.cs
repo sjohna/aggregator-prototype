@@ -1,4 +1,5 @@
 ﻿using aggregator_server;
+using aggregator_server.Exceptions;
 using aggregator_server.Models;
 using NodaTime;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace aggregator_server_test
 
             Assert.AreEqual(new Guid(), doc.ID);
 
-            repository.AddDocument(doc);
+            repository.InsertDocument(doc);
 
             Assert.AreEqual(1, repository.GetDocuments().Count());
 
@@ -64,7 +65,7 @@ namespace aggregator_server_test
                 UpdateTime = Instant.FromUnixTimeSeconds(2000)
             };
 
-            repository.AddDocument(doc);
+            repository.InsertDocument(doc);
 
             doc.Content = "new content";
             doc.UpdateTime = Instant.FromUnixTimeSeconds(3000);
@@ -103,7 +104,7 @@ namespace aggregator_server_test
                 UpdateTime = Instant.FromUnixTimeSeconds(2000)
             };
 
-            repository.AddDocument(doc);
+            repository.InsertDocument(doc);
             repository.UpdateDocument(doc);
 
             var docGottenAfterUpdate = repository.GetDocuments().First();
@@ -135,7 +136,7 @@ namespace aggregator_server_test
                 UpdateTime = Instant.FromUnixTimeSeconds(2000)
             };
 
-            repository.AddDocument(doc);
+            repository.InsertDocument(doc);
 
             var findResult = repository.FindBySourceID("sourceID");
 
@@ -164,7 +165,7 @@ namespace aggregator_server_test
                 UpdateTime = Instant.FromUnixTimeSeconds(2000)
             };
 
-            repository.AddDocument(doc);
+            repository.InsertDocument(doc);
 
             var findResult = repository.FindBySourceID("differentSourceID");
 
@@ -194,8 +195,8 @@ namespace aggregator_server_test
                 UpdateTime = Instant.FromUnixTimeSeconds(4000)
             };
 
-            repository.AddDocument(doc1);
-            repository.AddDocument(doc2);
+            repository.InsertDocument(doc1);
+            repository.InsertDocument(doc2);
 
             var findResult = repository.FindBySourceID("sourceID");
 
@@ -209,6 +210,37 @@ namespace aggregator_server_test
             Assert.AreEqual("sourceLink", foundDoc.SourceLink);
             Assert.AreEqual("The Title", foundDoc.Title);
             Assert.AreEqual(Instant.FromUnixTimeSeconds(2000), foundDoc.UpdateTime);
+        }
+
+        [Test]
+        public void GetDocumentInEmptyRepository()
+        {
+            Assert.Throws<RepositoryItemNotFoundException>(() => repository.GetDocument(Guid.NewGuid()));
+        }
+
+        [Test]
+        public void GetPresentDocument()
+        {
+            var doc = new Document()
+            {
+                Content = "some content",
+                PublishTime = Instant.FromUnixTimeSeconds(1000),
+                SourceID = "sourceID",
+                SourceLink = "sourceLink",
+                Title = "The Title",
+                UpdateTime = Instant.FromUnixTimeSeconds(2000)
+            };
+
+            repository.InsertDocument(doc);
+
+            var docInRepository = repository.GetDocument(doc.ID);
+
+            Assert.AreEqual("some content", docInRepository.Content);
+            Assert.AreEqual(Instant.FromUnixTimeSeconds(1000), docInRepository.PublishTime);
+            Assert.AreEqual("sourceID", docInRepository.SourceID);
+            Assert.AreEqual("sourceLink", docInRepository.SourceLink);
+            Assert.AreEqual("The Title", docInRepository.Title);
+            Assert.AreEqual(Instant.FromUnixTimeSeconds(2000), docInRepository.UpdateTime);
         }
     }
 }
