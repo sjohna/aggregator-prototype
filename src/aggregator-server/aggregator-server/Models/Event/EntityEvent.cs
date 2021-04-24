@@ -32,4 +32,14 @@ namespace aggregator_server.Models
 
         protected EntityEvent() { }
     }
+
+    public abstract class EntityEvent<T> : EntityEvent
+    {
+        protected EntityEvent(Guid AffectedEntityID, EntityType AffectedEntityType) : base(AffectedEntityID, AffectedEntityType)
+        {
+
+        }
+
+        protected EntityEvent() { }
+    }
 }

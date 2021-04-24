@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace aggregator_server.Models
 {
-    public abstract class UpdateEntityEvent<T> : EntityEvent
+    public abstract class UpdateEntityEvent<T> : EntityEvent<T>
     {
         protected Dictionary<String, Object> PrivateUpdateParameters { get; set; }
 

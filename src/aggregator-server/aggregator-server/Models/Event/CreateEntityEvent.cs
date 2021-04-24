@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace aggregator_server.Models
 {
-    public abstract class CreateEntityEvent<T> : EntityEvent
+    public abstract class CreateEntityEvent<T> : EntityEvent<T>
     {
         protected Dictionary<String, Object> PrivateCreationParameters { get; set; }
 
