@@ -75,7 +75,6 @@ namespace aggregator_server_test
 
             var updateEvent = new UpdatePollConfigurationEvent(configID);
             updateEvent.PollIntervalMinutes = 15;
-            updateEvent.URL = "new URL";
             updateEvent.Active = false;
 
             collection.Insert(updateEvent);
@@ -91,7 +90,7 @@ namespace aggregator_server_test
             updateEvent.UpdateEntity(config);
 
             Assert.AreEqual(15, config.PollIntervalMinutes);
-            Assert.AreEqual("new URL", config.URL);
+            Assert.AreEqual("test", config.URL);
             Assert.AreEqual(false, config.Active);
         }
     }

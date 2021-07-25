@@ -23,11 +23,6 @@ namespace aggregator_server.Models
                 throw new EventException("Attempted to apply UpdatePollConfigurationEvent with no updated fields.");
             }
 
-            if (UpdateParameters.ContainsKey(nameof(PollConfiguration.URL)))
-            {
-                entity.URL = (string) UpdateParameters[nameof(PollConfiguration.URL)];
-            }
-
             if (UpdateParameters.ContainsKey(nameof(PollConfiguration.PollIntervalMinutes)))
             {
                 entity.PollIntervalMinutes = (int) UpdateParameters[nameof(PollConfiguration.PollIntervalMinutes)];
@@ -45,14 +40,6 @@ namespace aggregator_server.Models
         }
 
         public UpdatePollConfigurationEvent() { }
-
-        public string URL
-        {
-            set
-            {
-                PrivateUpdateParameters[nameof(PollConfiguration.URL)] = value;
-            }
-        }
 
         public int PollIntervalMinutes
         {

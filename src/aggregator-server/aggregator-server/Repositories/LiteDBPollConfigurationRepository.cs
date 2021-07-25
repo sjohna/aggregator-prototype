@@ -132,5 +132,43 @@ namespace aggregator_server
                 }
             }
         }
+
+        public void ApplyEvent(EntityEvent<PollConfiguration> e)
+        {
+            ApplySpecificEvent(e as dynamic);
+        }
+
+        private void ApplySpecificEvent(CreatePollConfigurationEvent e)
+        {
+            lock (database)
+            {
+                var collection = database.GetCollection<PollConfiguration>(PollConfigurationCollectionName);
+
+                var newConfiguration = e.CreateEntity();
+
+                if (collection.Find(config => config.URL == newConfiguration.URL).Any())
+                {
+                    throw new RepositoryConflictException($"Configuration already exists for URL {newConfiguration.URL}");
+                }
+
+                database.GetCollection<PollConfiguration>(PollConfigurationCollectionName).Insert(newConfiguration);
+            }
+        }
+
+        private void ApplySpecificEvent(DeletePollConfigurationEvent e)
+        {
+            DeleteConfiguration(e.AffectedEntityID);
+        }
+
+        private void ApplySpecificEvent(UpdatePollConfigurationEvent e)
+        {
+            // TODO: refactor this implementation
+
+            var config = GetConfiguration(e.AffectedEntityID);
+
+            e.UpdateEntity(config);
+
+            UpdateConfiguration(config);
+        }
     }
 }

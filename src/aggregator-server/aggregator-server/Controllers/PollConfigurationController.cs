@@ -67,7 +67,12 @@ namespace aggregator_server.Controllers
             {
                 bool active = newConfiguration.Active ?? true;
 
-                var addedConfiguration = m_repository.AddConfiguration(newConfiguration.URL, newConfiguration.PollIntervalMinutes.Value, active);
+                var createEvent = new CreatePollConfigurationEvent(Guid.NewGuid(), newConfiguration.PollIntervalMinutes.Value, newConfiguration.URL, active);
+
+                m_repository.ApplyEvent(createEvent);
+
+                var addedConfiguration = m_repository.GetConfiguration(createEvent.AffectedEntityID);
+
                 configLog.Info($"[ADD] poll configuration: ID = {addedConfiguration.ID}, Interval = {addedConfiguration.PollIntervalMinutes}, URL = {addedConfiguration.URL}, Active = {addedConfiguration.Active}");
 
                 return Ok(addedConfiguration);
@@ -96,11 +101,14 @@ namespace aggregator_server.Controllers
 
             try
             {
-                var configuration = m_repository.GetConfiguration(id);  // TODO: Race condition: it's possible for one write affecting only the PollInterval and anther one affecting only Active to interleave poorly, resulting in only one change taking place...
-                configuration.PollIntervalMinutes = updatedConfiguration.PollIntervalMinutes ?? configuration.PollIntervalMinutes;
-                configuration.Active = updatedConfiguration.Active ?? configuration.Active;
+                var updateEvent = new UpdatePollConfigurationEvent(id);
+                if (updatedConfiguration.PollIntervalMinutes.HasValue) updateEvent.PollIntervalMinutes = updatedConfiguration.PollIntervalMinutes.Value;
+                if (updatedConfiguration.Active.HasValue) updateEvent.Active = updatedConfiguration.Active.Value;
 
-                m_repository.UpdateConfiguration(configuration);
+                m_repository.ApplyEvent(updateEvent);
+
+                var configuration = m_repository.GetConfiguration(id);
+
                 configLog.Info($"[UPDATE] poll configuration: ID = {configuration.ID}, Interval = {configuration.PollIntervalMinutes}, URL = {configuration.URL}, Active = {configuration.Active}");
 
                 return Ok(configuration);
@@ -118,7 +126,9 @@ namespace aggregator_server.Controllers
         {
             try
             {
-                m_repository.DeleteConfiguration(id);
+                var deleteEvent = new DeletePollConfigurationEvent(id);
+
+                m_repository.ApplyEvent(deleteEvent);
                 configLog.Info($"[DELETE] poll configuration: ID = {id}");
 
                 return Ok();

@@ -19,22 +19,6 @@ namespace aggregator_server_test
         }
 
         [Test]
-        public void UpdateURL()
-        {
-            var config = new PollConfiguration(Guid.NewGuid(), 10, "test", true);
-
-            var e = new UpdatePollConfigurationEvent(config.ID);
-
-            e.URL = "new URL";
-
-            e.UpdateEntity(config);
-
-            Assert.AreEqual(10, config.PollIntervalMinutes);
-            Assert.AreEqual("new URL", config.URL);
-            Assert.AreEqual(true, config.Active);
-        }
-
-        [Test]
         public void UpdatePollIntervalMinutes()
         {
             var config = new PollConfiguration(Guid.NewGuid(), 10, "test", true);
@@ -75,12 +59,11 @@ namespace aggregator_server_test
 
             e.Active = false;
             e.PollIntervalMinutes = 15;
-            e.URL = "new URL";
 
             e.UpdateEntity(config);
 
             Assert.AreEqual(15, config.PollIntervalMinutes);
-            Assert.AreEqual("new URL", config.URL);
+            Assert.AreEqual("test", config.URL);
             Assert.AreEqual(false, config.Active);
         }
 
@@ -105,7 +88,7 @@ namespace aggregator_server_test
 
             var e = new UpdatePollConfigurationEvent(Guid.NewGuid());
 
-            e.URL = "new URL";
+            e.PollIntervalMinutes = 15;
 
             Assert.Throws<EventException>(() => e.UpdateEntity(config));
 
